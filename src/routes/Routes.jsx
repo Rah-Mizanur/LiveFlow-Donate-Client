@@ -1,27 +1,26 @@
-import Home from '../pages/Home/Home'
-import ErrorPage from '../pages/ErrorPage'
-import Login from '../pages/Login/Login'
-import SignUp from '../pages/SignUp/SignUp'
+import Home from "../pages/Home/Home";
+import ErrorPage from "../pages/ErrorPage";
+import Login from "../pages/Login/Login";
+import SignUp from "../pages/SignUp/SignUp";
 
+import MainLayout from "../layouts/MainLayout";
 
-import MainLayout from '../layouts/MainLayout'
+import { createBrowserRouter } from "react-router";
 
-import { createBrowserRouter } from 'react-router'
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <MainLayout />,
     errorElement: <ErrorPage />,
     children: [
       {
-        path: '/',
+        path: "/",
         element: <Home />,
       },
-   
     ],
   },
-  { path: '/login', element: <Login /> },
-  { path: '/signup', element: <SignUp /> },
+  { path: "/login", element: <Login /> },
+  { path: "/signup", element: <SignUp /> },
 
-])
+]);
