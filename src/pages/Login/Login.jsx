@@ -3,35 +3,46 @@ import toast from 'react-hot-toast'
 import LoadingSpinner from '../../components/Shared/LoadingSpinner'
 import useAuth from '../../hooks/useAuth'
 import { TbFidgetSpinner } from 'react-icons/tb'
+import { useForm } from 'react-hook-form'
+import { saveOrUpdateUser } from '../../utils'
 
 const Login = () => {
   const { signIn, loading, user} = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  
+ 
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const onSubmit = async (data) => {
+    const { user } =await signIn(data.email, data.password);
+    // save data on DB
+    await saveOrUpdateUser({
+      name: user?.displayName,
+      email: user?.email,
+      image: user?.image,
+    })
+      .then((result) => {
+        toast.success("User Login Successfully");
+        console.log(result.user);
+        navigate(location?.state || "/");
+      })
+      .catch((err) => {
+        toast("User and password not found");
+        console.log(err);
+      });
+  };
 
   const from = location.state || '/'
 
   if (loading) return <LoadingSpinner />
   if (user) return <Navigate to={from} replace={true} />
 
-  // form submit handler
-  const handleSubmit = async event => {
-    event.preventDefault()
-    const form = event.target
-    const email = form.email.value
-    const password = form.password.value
 
-    try {
-      //User Login
-      await signIn(email, password)
 
-      navigate(from, { replace: true })
-      toast.success('Login Successful')
-    } catch (err) {
-      console.log(err)
-      toast.error(err?.message)
-    }
-  }
 
   
   return (
@@ -44,7 +55,7 @@ const Login = () => {
           </p>
         </div>
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           noValidate=''
           action=''
           className='space-y-6 ng-untouched ng-pristine ng-valid'
@@ -57,12 +68,16 @@ const Login = () => {
               <input
                 type='email'
                 name='email'
+                       {...register("email", { required: true })}
                 id='email'
                 required
                 placeholder='Enter Your Email Here'
                 className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-lime-500 bg-gray-200 text-gray-900'
                 data-temp-mail-org='0'
               />
+                 {errors.email?.type === "required" && (
+                <p className="text-red-500 capitalize"> Please give Email </p>
+              )}
             </div>
             <div>
               <div className='flex justify-between'>
@@ -73,12 +88,14 @@ const Login = () => {
               <input
                 type='password'
                 name='password'
+                         {...register("password", { required: true })}
                 autoComplete='current-password'
                 id='password'
                 required
                 placeholder='*******'
                 className='w-full px-3 py-2 border rounded-md border-gray-300 focus:outline-lime-500 bg-gray-200 text-gray-900'
               />
+              
             </div>
           </div>
 
