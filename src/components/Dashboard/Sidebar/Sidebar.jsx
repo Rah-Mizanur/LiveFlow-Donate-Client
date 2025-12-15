@@ -70,10 +70,10 @@ const Sidebar = () => {
                 label='Statistics'
                 address='/dashboard'
               />
-              {/* Role-Based Menu */}
+              {/* Role-Based Menu
               <CustomerMenu />
               <SellerMenu />
-              <AdminMenu />
+              <AdminMenu /> */}
             </nav>
           </div>
 

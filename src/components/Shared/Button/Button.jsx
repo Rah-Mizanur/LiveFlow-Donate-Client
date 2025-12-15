@@ -1,43 +1,52 @@
-const Button = ({ label, onClick, disabled, outline, small, icon: Icon }) => {
+const Button = ({
+  label,
+  children,
+  onClick,
+  type = "button",
+  disabled = false,
+  outline = false,
+  small = false,
+  icon: Icon,
+  className = "",
+}) => {
   return (
-  <button
-  disabled={disabled}
-  onClick={onClick}
-  className={`
-    relative
-    disabled:opacity-70
-    disabled:cursor-not-allowed
-    rounded-lg
-    hover:opacity-80
-    transition
-    cursor-pointer
-    px-4
-    w-full
+    <button
+      type={type}
+      disabled={disabled}
+      onClick={onClick}
+      className={`
+        relative
+        w-full
+        rounded-lg
+        transition
+        hover:opacity-80
+        disabled:opacity-70
+        disabled:cursor-not-allowed
 
-    ${outline ? 'bg-white' : 'bg-[#8A1E27]'}      /* Blood Red */
-    ${outline ? 'border-[#8A1E27]' : 'border-[#8A1E27]'}
-    ${outline ? 'text-[#8A1E27]' : 'text-white'}
+        ${outline ? "bg-white" : "bg-[#8A1E27]"}
+        border
+        border-[#8A1E27]
+        ${outline ? "text-[#8A1E27]" : "text-white"}
 
-    ${small ? 'text-sm' : 'text-md'}
-    ${small ? 'py-1' : 'py-3'}
-    ${small ? 'font-light' : 'font-semibold'}
-    ${small ? 'border' : 'border-2'}
-  `}
->
-  {Icon && (
-    <Icon
-      size={24}
-      className='
-        absolute
-        left-4
-        top-3
-      '
-    />
-  )}
-  {label}
-</button>
+        ${small ? "py-1 text-sm font-light" : "py-3 text-md font-semibold"}
+        px-4
 
-  )
-}
+        ${className}
+      `}
+    >
+      {Icon && (
+        <Icon
+          size={20}
+          className="absolute left-4 top-1/2 -translate-y-1/2"
+        />
+      )}
 
-export default Button
+      {/* label OR children */}
+      <span className={Icon ? "pl-6" : ""}>
+        {label || children}
+      </span>
+    </button>
+  );
+};
+
+export default Button;
