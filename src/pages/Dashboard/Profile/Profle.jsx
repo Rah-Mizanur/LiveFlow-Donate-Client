@@ -98,7 +98,7 @@ const Profile = () => {
     // TODO: API call
     setIsEditing(false);
   };
-   if(isLoading) return <LoadingSpinner></LoadingSpinner>
+   if(isLoading) return <LoadingSpinner></LoadingSpinner>;
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Dashboard / Profile</h1>
@@ -176,6 +176,7 @@ const Profile = () => {
                 <Label>Email</Label>
                 <Input value={profile.email} disabled {...register('email')} />
               </div>
+              
                 <div>
               <label className="block mb-1 text-sm">District</label>
               <select
