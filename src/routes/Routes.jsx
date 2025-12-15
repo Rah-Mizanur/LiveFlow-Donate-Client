@@ -8,6 +8,11 @@ import MainLayout from "../layouts/MainLayout";
 import { createBrowserRouter } from "react-router";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Profile from "../pages/Dashboard/Profile/Profle";
+import DonorDashboard from "../pages/Dashboard/Donor/DonorDashBoard/DonorDashboard";
+import MyDonationRequests from "../pages/Dashboard/Donor/MydonationRequests/MyDonationRequests";
+import CreateDonationRequests from "../pages/Dashboard/Donor/CreateDonation/CreateDonationRequests";
+import AllUsers from "../pages/Dashboard/Admin/AllUsers/AllUsers";
+import AllBloodDonationRequest from "../pages/Dashboard/Admin/AllBloodDonationRequset/AllBloodDonationRequest";
 
 
 export const router = createBrowserRouter([
@@ -30,8 +35,28 @@ export const router = createBrowserRouter([
     children : [
       {
         index : true ,
+        element : <DonorDashboard></DonorDashboard>
+      },
+      {
+        path : 'profile',
         element : <Profile></Profile>
+      },
+      {
+        path :'my-donation-requests',
+        element : <MyDonationRequests></MyDonationRequests>
+      },
+      {
+        path :'create-donation-request',
+        element : <CreateDonationRequests></CreateDonationRequests>
+      },
+      {
+        path :'all-users',
+        element : <AllUsers></AllUsers>
+      },{
+        path:'all-blood-donation-request',
+        element: <AllBloodDonationRequest></AllBloodDonationRequest>
       }
+     
     ]
   }
 

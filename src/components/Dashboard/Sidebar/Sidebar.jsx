@@ -13,6 +13,8 @@ import MenuItem from './Menu/MenuItem'
 import AdminMenu from './Menu/AdminMenu'
 import SellerMenu from './Menu/VolunteerMenu'
 import CustomerMenu from './Menu/DonorMenu'
+import DonorMenu from './Menu/DonorMenu'
+import VolunteerMenu from './Menu/VolunteerMenu'
 
 const Sidebar = () => {
   const { logOut } = useAuth()
@@ -70,10 +72,13 @@ const Sidebar = () => {
                 label='Statistics'
                 address='/dashboard'
               />
-              {/* Role-Based Menu
-              <CustomerMenu />
-              <SellerMenu />
-              <AdminMenu /> */}
+{/* 
+              {
+                roll based menu items 
+              } */}
+              <AdminMenu />
+              <DonorMenu></DonorMenu>
+              <VolunteerMenu></VolunteerMenu>
             </nav>
           </div>
 

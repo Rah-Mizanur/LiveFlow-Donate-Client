@@ -1,11 +1,15 @@
+import MenuItem from "./MenuItem"
 
-import React from 'react'
+import { MdDashboard } from "react-icons/md";
 
+import { FaHandHoldingMedical } from "react-icons/fa";
 const VolunteerMenu = () => {
   return (
-    <div>
-      
-    </div>
+    <>
+      <MenuItem icon={MdDashboard}label='Dashboard' address=''></MenuItem>
+   
+      <MenuItem icon={FaHandHoldingMedical}label='All Blood Requests' address='all-blood-donation-request'></MenuItem>
+       </>
   )
 }
 
