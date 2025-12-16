@@ -13,6 +13,7 @@ import MyDonationRequests from "../pages/Dashboard/Donor/MydonationRequests/MyDo
 import CreateDonationRequests from "../pages/Dashboard/Donor/CreateDonation/CreateDonationRequests";
 import AllUsers from "../pages/Dashboard/Admin/AllUsers/AllUsers";
 import AllBloodDonationRequest from "../pages/Dashboard/Admin/AllBloodDonationRequset/AllBloodDonationRequest";
+import EditRequest from "../pages/Dashboard/EditRequest/EditRequest";
 
 
 export const router = createBrowserRouter([
@@ -55,6 +56,10 @@ export const router = createBrowserRouter([
       },{
         path:'all-blood-donation-request',
         element: <AllBloodDonationRequest></AllBloodDonationRequest>
+      },
+      {
+        path : 'edit-request/:id',
+        element : <EditRequest></EditRequest>
       }
      
     ]
