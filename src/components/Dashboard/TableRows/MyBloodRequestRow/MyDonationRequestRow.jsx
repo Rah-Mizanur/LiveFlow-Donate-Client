@@ -42,7 +42,7 @@ const MyDonationRequestRow = ({request}) => {
                     {/* Actions */}
                     <td>
                       <div className="flex flex-col md:flex-row gap-1 md:gap-2">
-                        {request.status === "inprogress" && (
+                        {/* {request.status === "inprogress" && (
                           <>
                             <button className="btn btn-xs btn-success">
                               Done
@@ -51,7 +51,7 @@ const MyDonationRequestRow = ({request}) => {
                               Cancel
                             </button>
                           </>
-                        )}
+                        )} */}
 
                         <Link
                           to={`/dashboard/edit-request/${request._id}`}
