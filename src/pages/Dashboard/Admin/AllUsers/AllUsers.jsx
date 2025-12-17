@@ -8,7 +8,7 @@ import UsersDataRow from '../../../../components/Dashboard/TableRows/UsersDataRo
 const AllUsers = () => {
   const {user} = useAuth()
   const axiosSecure = useAxiosSecure()
-      const {data: allUsers = [] ,isLoading} = useQuery({
+      const {data: allUsers = [] ,isLoading,refetch} = useQuery({
      queryKey: ['allUsers'],
     queryFn : async ()=> {
       const result = await axiosSecure(`${import.meta.env.VITE_API_URL}/all-users`)
@@ -41,6 +41,7 @@ const AllUsers = () => {
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Role</th>
+              <th className="px-4 py-3">Update Role</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3 text-center">Action</th>
             </tr>
@@ -49,7 +50,7 @@ const AllUsers = () => {
           <tbody>
             {/* Row */}
             {
-              allUsers.map(webUser=><UsersDataRow key={webUser._id} webUser={webUser}></UsersDataRow> )
+              allUsers.map(webUser=><UsersDataRow key={webUser._id} webUser={webUser} user={user} refetch={refetch} ></UsersDataRow> )
             }
            
           </tbody>
