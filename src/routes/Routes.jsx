@@ -8,13 +8,13 @@ import MainLayout from "../layouts/MainLayout";
 import { createBrowserRouter } from "react-router";
 import DashboardLayout from "../layouts/DashboardLayout";
 import Profile from "../pages/Dashboard/Profile/Profle";
-import DonorDashboard from "../pages/Dashboard/Donor/DonorDashBoard/DonorDashboard";
 import MyDonationRequests from "../pages/Dashboard/Donor/MydonationRequests/MyDonationRequests";
 import CreateDonationRequests from "../pages/Dashboard/Donor/CreateDonation/CreateDonationRequests";
 import AllUsers from "../pages/Dashboard/Admin/AllUsers/AllUsers";
 import AllBloodDonationRequest from "../pages/Dashboard/Admin/AllBloodDonationRequset/AllBloodDonationRequest";
 import EditRequest from "../pages/Dashboard/EditRequest/EditRequest";
 import BloodRequestDetails from "../pages/Dashboard/BloodRequestDetails/BloodRequestDetails";
+import DashboardHome from "../pages/Dashboard/DashboardHome/DashBoardHome";
 
 
 export const router = createBrowserRouter([
@@ -42,7 +42,7 @@ export const router = createBrowserRouter([
     children : [
       {
         index : true ,
-        element : <DonorDashboard></DonorDashboard>
+        element : <DashboardHome></DashboardHome>
       },
       {
         path : 'profile',

@@ -11,15 +11,15 @@ import { BsGraphUp } from 'react-icons/bs'
 // User Menu
 import MenuItem from './Menu/MenuItem'
 import AdminMenu from './Menu/AdminMenu'
-import SellerMenu from './Menu/VolunteerMenu'
-import CustomerMenu from './Menu/DonorMenu'
 import DonorMenu from './Menu/DonorMenu'
 import VolunteerMenu from './Menu/VolunteerMenu'
+import useRole from '../../../hooks/useRole'
 
 const Sidebar = () => {
   const { logOut } = useAuth()
   const [isActive, setActive] = useState(false)
-
+  const {role , isRoleLoading} = useRole()
+  console.log(role)
   // Sidebar Responsive Handler
   const handleToggle = () => {
     setActive(!isActive)
@@ -55,7 +55,7 @@ const Sidebar = () => {
           {/* Top Content */}
           <div>
             {/* Logo */}
-            <div className='w-full hidden md:flex px-4 py-2 shadow-lg rounded-lg justify-center items-center bg-lime-100 mx-auto'>
+            <div className='w-full hidden md:flex px-4 py-2 shadow-lg rounded-lg justify-center items-center bg-blue-100 mx-auto'>
               <Link to='/'>
                 <img src={logo} alt='logo' width='100' height='100' />
               </Link>
@@ -71,9 +71,14 @@ const Sidebar = () => {
               {
                 roll based menu items 
               } */}
-              <AdminMenu />
-              <DonorMenu></DonorMenu>
-              <VolunteerMenu></VolunteerMenu>
+            
+              
+              {role === "donor" && <DonorMenu />}
+
+              {role === "volunteer" && <VolunteerMenu />}
+
+              {role === "admin" && <AdminMenu />}
+
             </nav>
           </div>
 
