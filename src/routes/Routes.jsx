@@ -27,10 +27,15 @@ export const router = createBrowserRouter([
         path: "/",
         element: <Home />,
       },
+      {
+        path :'request/:id',
+        element : <BloodRequestDetails></BloodRequestDetails>
+      },
     ],
   },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <SignUp /> },
+    
   {
     path :'/dashboard',
     element : <DashboardLayout></DashboardLayout>,
@@ -62,10 +67,7 @@ export const router = createBrowserRouter([
         path : 'edit-request/:id',
         element : <EditRequest></EditRequest>
       },
-      {
-        path :'request/:id',
-        element : <BloodRequestDetails></BloodRequestDetails>
-      }
+    
     ]
   }
 

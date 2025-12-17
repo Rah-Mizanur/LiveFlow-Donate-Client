@@ -1,11 +1,62 @@
 import React from 'react'
+import useAuth from '../../../../hooks/useAuth'
+import useAxiosSecure from '../../../../hooks/useAxiosSecure'
+import { useQuery } from '@tanstack/react-query'
+import LoadingSpinner from '../../../../components/Shared/LoadingSpinner'
+import UsersDataRow from '../../../../components/Dashboard/TableRows/UsersDataRow'
 
 const AllUsers = () => {
+  const {user} = useAuth()
+  const axiosSecure = useAxiosSecure()
+      const {data: allUsers = [] ,isLoading} = useQuery({
+     queryKey: ['allUsers'],
+    queryFn : async ()=> {
+      const result = await axiosSecure(`${import.meta.env.VITE_API_URL}/all-users`)
+      return result.data
+    }
+  })
+  console.log(allUsers)
+  if(isLoading) return <LoadingSpinner></LoadingSpinner>
   return (
-    <div>
-      <h1> hello from All users</h1>
-    </div>
-  )
-}
+    <div className="p-6 bg-gray-50 min-h-screen">
+      {/* Page Title */}
+      <h2 className="text-2xl font-semibold mb-6">All Users 👤</h2>
 
-export default AllUsers
+      {/* Filter */}
+      <div className="flex gap-3 mb-4">
+        <button className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm">
+          Active
+        </button>
+        <button className="px-4 py-2 rounded-md bg-gray-200 text-gray-700 text-sm">
+          Blocked
+        </button>
+      </div>
+
+      {/* Table */}
+      <div className="overflow-x-auto bg-white rounded-lg shadow">
+        <table className="w-full text-sm text-left">
+          <thead className="bg-gray-100 text-gray-600 uppercase text-xs">
+            <tr>
+              <th className="px-4 py-3">Avatar</th>
+              <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Email</th>
+              <th className="px-4 py-3">Role</th>
+              <th className="px-4 py-3">Status</th>
+              <th className="px-4 py-3 text-center">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {/* Row */}
+            {
+              allUsers.map(webUser=><UsersDataRow key={webUser._id} webUser={webUser}></UsersDataRow> )
+            }
+           
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default AllUsers;

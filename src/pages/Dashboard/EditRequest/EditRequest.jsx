@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router";
 
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
+import useDistrictUpazila from "../../../hooks/useDistrictUpazila";
 
 const EditRequest = () => {
   const { user } = useAuth();
@@ -49,6 +50,7 @@ const EditRequest = () => {
   const filteredUpazilas = upazilas.filter(
     (upazila) => upazila.district_id === selectedDistrict
   );
+
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
   const { data: reqDetails = [], isLoading } = useQuery({
@@ -60,8 +62,12 @@ const EditRequest = () => {
       return result.data;
     },
   });
-  console.log(reqDetails);
+ const { districtName, upazilaName } = useDistrictUpazila(
+        reqDetails.recipientZila, 
+        reqDetails.recipientUpazila
+    );
 
+console.log(districtName)
   const onSubmit = () => {
     console.log("okay");
   };
@@ -116,7 +122,7 @@ const EditRequest = () => {
               {...register("recipientZila", {
                 required: "District is required",
               })}
-              defaultValue={reqDetails.recipientZila}
+              defaultValue={districtName}
               className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
             >
               <option value="" disabled>

@@ -8,7 +8,7 @@ const AdminMenu = () => {
     <>
       <MenuItem icon={MdDashboard}label='Dashboard' address=''></MenuItem>
       <MenuItem icon={HiUsers}label='All Users' address='all-users'></MenuItem>
-      <MenuItem icon={FaHandHoldingMedical}label='All Blood Requests' address='all-blood-donation-request'></MenuItem>
+      <MenuItem icon={FaHandHoldingMedical}label='All Blood Donation Requests' address='all-blood-donation-request'></MenuItem>
        </>
   )
 }

@@ -12,7 +12,7 @@ const MyDonationRequests = () => {
       const {data: myBloodReq = [] ,isLoading} = useQuery({
      queryKey: ['myBloodReq', user?.email],
     queryFn : async ()=> {
-      const result = await axiosSecure(`${import.meta.env.VITE_API_URL}/my-blood-req-latest/${user.email}`)
+      const result = await axiosSecure(`${import.meta.env.VITE_API_URL}/my-blood-req/${user.email}`)
       return result.data
     }
   })

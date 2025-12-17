@@ -65,7 +65,7 @@ const MyDonationRequestRow = ({request}) => {
                         </button>
 
                         <Link
-                          to={`/dashboard/request/${request._id}`}
+                          to={`/request/${request._id}`}
                           className="btn btn-xs btn-outline"
                         >
                           View

@@ -67,11 +67,6 @@ const Sidebar = () => {
             {/*  Menu Items */}
             <nav>
               {/* Common Menu */}
-              <MenuItem
-                icon={BsGraphUp}
-                label='Statistics'
-                address='/dashboard'
-              />
 {/* 
               {
                 roll based menu items 
