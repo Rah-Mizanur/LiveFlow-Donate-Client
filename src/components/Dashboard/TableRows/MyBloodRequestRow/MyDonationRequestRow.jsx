@@ -2,14 +2,44 @@ import { Link } from "react-router";
 import useDistrictUpazila from "../../../../hooks/useDistrictUpazila";
 import { useState } from "react";
 import UpdateStatusModal from "../../Modal/UpdateStatusModal";
+import toast from "react-hot-toast";
+import useAxiosSecure from "../../../../hooks/useAxiosSecure";
 
 const MyDonationRequestRow = ({ request, statusRefetch }) => {
   const { districtName, upazilaName } = useDistrictUpazila(
     request.recipientZila,
     request.recipientUpazila
   );
+  const axiosSecure = useAxiosSecure()
   let [isOpen, setIsOpen] = useState(false);
   const closeModal = () => setIsOpen(false);
+  const handleStatusDone = async()=>{
+       try {
+      await axiosSecure.patch("/update-blood-status-done", {
+        id: request._id,
+        status: "done",  
+      });
+      toast.success("Status Update Successfully");
+       await statusRefetch()
+    } catch (err) {
+      toast("Something went Wrong ... Try Again ..");
+      console.log(err);
+    }
+  }
+
+  const handleStatusCancel =async()=>{
+          try {
+      await axiosSecure.patch("/update-blood-status-done", {
+        id: request._id,
+        status: "cancel",  
+      });
+      toast.success("Status Update Successfully");
+      await  statusRefetch()
+    } catch (err) {
+      toast("Something went Wrong ... Try Again ..");
+      console.log(err);
+    }
+  }
   return (
     <tr>
       <td>{request.recipientName}</td>
@@ -54,22 +84,51 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
           >
             <span
               aria-hidden="true"
-              className="absolute inset-0 bg-blue-200 opacity-50 rounded-full"
+              className="absolute inset-0 bg-yellow-400 opacity-50 rounded-full"
             ></span>
             <span className="relative">{request.status}</span>
           </span>
         </td>
       )}
+      {request.status === "done" && (
+         <td className="px-4 py-3">
+          <span
+            onClick={() => setIsOpen(true)}
+            className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-blue-900 leading-tight"
+          >
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 bg-green-600 opacity-50 rounded-full"
+            ></span>
+            <span className="relative">{request.status}</span>
+          </span>
+        </td>
+      )}
+      {request.status === "cancel" && (
+         <td className="px-4 py-3">
+          <span
+            onClick={() => setIsOpen(true)}
+            className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-blue-900 leading-tight"
+          >
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 bg-red-600 opacity-50 rounded-full"
+            ></span>
+            <span className="relative">{request.status}</span>
+          </span>
+        </td>
+      )}
+     
 
       {/* Donor info */}
       <td className="hidden lg:table-cell">
-        {request.status === "inprogress" ? (
-          <>
-            <p>{request.donorName}</p>
+        {request.status === "pending" ? (
+       "-"
+        ) : (
+            <>
+            <p className="capitalize">{request.donorName}</p>
             <p className="text-xs text-gray-500">{request.donorEmail}</p>
           </>
-        ) : (
-          "-"
         )}
       </td>
 
@@ -78,8 +137,8 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
         <div className="flex flex-col md:flex-row gap-1 md:gap-2">
           {request.status === "inprogress" && (
             <>
-              <button className="btn btn-xs btn-success">Done</button>
-              <button className="btn btn-xs btn-warning">Cancel</button>
+              <button onClick={handleStatusDone} className="btn btn-xs btn-success">Done</button>
+              <button onClick={handleStatusCancel} className="btn btn-xs btn-warning">Cancel</button>
             </>
           )}
 

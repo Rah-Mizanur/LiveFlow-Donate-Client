@@ -19,7 +19,7 @@ const UpdateStatusModal = ({isOpen,closeModal,statusRefetch,request}) => {
 
       })
       toast.success('Role Update Successfully')
-      statusRefetch()
+    
  
     }catch(err){
       toast('Something went Wrong ... Try Again ..')
