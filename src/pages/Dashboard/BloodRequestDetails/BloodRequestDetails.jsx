@@ -6,6 +6,8 @@ import { useQuery } from '@tanstack/react-query';
 import useDistrictUpazila from '../../../hooks/useDistrictUpazila';
 import DetailItem from '../../../components/Shared/DetailItem/DetailItem';
 import LoadingSpinner from '../../../components/Shared/LoadingSpinner';
+import Button from '../../../components/Shared/Button/Button';
+import toast from 'react-hot-toast';
 
 const BloodRequestDetails = () => {
      const { user } = useAuth();
@@ -14,6 +16,7 @@ const BloodRequestDetails = () => {
   const axiosSecure = useAxiosSecure();
   const { data: reqDetails = [], isLoading } = useQuery({
     queryKey: ["reqDetails", id, user?.email],
+     enabled: !!id,
     queryFn: async () => {
       const result = await axiosSecure(
         `${import.meta.env.VITE_API_URL}/req-details/${id}`
@@ -37,7 +40,25 @@ const formatTime = (time) => {
         const formattedHour = h % 12 || 12; // Converts 0 to 12
         return `${formattedHour}:${minute} ${ampm}`;
     };
+    
+ const handleStatus = async()=>{
+    const updatedStatus = 'inprogress'
+         try{
+      await axiosSecure.patch('/update-blood-status',{
+        id : id,
+        status : updatedStatus,
+        donorName : user.displayName ,
+        donorEmail : user.email
 
+      })
+      toast.success('Role Update Successfully')
+    
+ 
+    }catch(err){
+      toast('Something went Wrong ... Try Again ..')
+      console.log(err)
+    }
+    }
    
 
     if(isLoading) return <LoadingSpinner></LoadingSpinner>
@@ -101,8 +122,12 @@ const formatTime = (time) => {
             </section>
             
             <footer className="mt-10 pt-6 border-t text-center">
-                <p className="text-sm text-gray-500">Request ID: {reqDetails._id}</p>
-                {/* Action Button: e.g., <button>Accept Donation</button> */}
+                <p className="text-lg text-gray-500">Request ID: {reqDetails._id}</p>
+               
+                 {
+                        reqDetails.status === 'pending' &&    <Button className='mt-2'><button onClick={handleStatus}>Donate</button></Button>
+                 }
+              
             </footer>
         </div>
     );
