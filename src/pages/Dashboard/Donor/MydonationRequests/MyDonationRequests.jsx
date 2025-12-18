@@ -1,25 +1,33 @@
-import { useQuery } from '@tanstack/react-query'
-import React from 'react'
-import useAuth from '../../../../hooks/useAuth'
-import useAxiosSecure from '../../../../hooks/useAxiosSecure'
-import MyDonationRequestRow from '../../../../components/Dashboard/TableRows/MyBloodRequestRow/MyDonationRequestRow'
-import LoadingSpinner from '../../../../components/Shared/LoadingSpinner'
-import { Link } from 'react-router'
+import { useQuery } from "@tanstack/react-query";
+import React from "react";
+import useAuth from "../../../../hooks/useAuth";
+import useAxiosSecure from "../../../../hooks/useAxiosSecure";
+import MyDonationRequestRow from "../../../../components/Dashboard/TableRows/MyBloodRequestRow/MyDonationRequestRow";
+import LoadingSpinner from "../../../../components/Shared/LoadingSpinner";
+import { Link } from "react-router";
 
 const MyDonationRequests = () => {
-  const {user} = useAuth()
-  const axiosSecure = useAxiosSecure()
-      const {data: myBloodReq = [] ,isLoading} = useQuery({
-     queryKey: ['myBloodReq', user?.email],
-    queryFn : async ()=> {
-      const result = await axiosSecure(`${import.meta.env.VITE_API_URL}/my-blood-req/${user.email}`)
-      return result.data
-    }
-  })
-  if(isLoading) return <LoadingSpinner></LoadingSpinner>
+  const { user } = useAuth();
+  console.log(user?.email);
+  const axiosSecure = useAxiosSecure();
+  const {
+    data: myBloodReq = [],
+    isLoading,
+    refetch: statusRefetch,
+  } = useQuery({
+    queryKey: ["myBloodReq", user?.email],
+    enabled: !!user?.email,
+    queryFn: async () => {
+      const result = await axiosSecure(
+        `${import.meta.env.VITE_API_URL}/my-blood-req/${user.email}`
+      );
+      return result.data;
+    },
+  });
+  if (isLoading) return <LoadingSpinner></LoadingSpinner>;
   return (
     <div>
-     {myBloodReq.length > 0 && (
+      {myBloodReq.length > 0 && (
         <>
           <h3 className="text-lg md:text-xl font-medium mb-4">
             My All Donation Requests
@@ -43,19 +51,19 @@ const MyDonationRequests = () => {
 
               <tbody>
                 {myBloodReq.map((request) => (
-                  <MyDonationRequestRow key={request._id} request= {request}>
-                    
-                  </MyDonationRequestRow>
+                  <MyDonationRequestRow
+                    key={request._id}
+                    statusRefetch={statusRefetch}
+                    request={request}
+                  ></MyDonationRequestRow>
                 ))}
               </tbody>
             </table>
           </div>
-
-        
         </>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default MyDonationRequests
+export default MyDonationRequests;
