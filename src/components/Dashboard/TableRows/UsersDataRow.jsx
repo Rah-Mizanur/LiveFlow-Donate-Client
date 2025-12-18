@@ -1,11 +1,32 @@
 import React, { useState } from "react";
 import UpdateUserRoleModal from "../Modal/UpdateUserModal";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import toast from "react-hot-toast";
 
-const UsersDataRow = ({ webUser,user,refetch }) => {
+const UsersDataRow = ({ webUser,refetch }) => {
+  const axiosSecure = useAxiosSecure()
   console.log(webUser)
   const { name, email, role, status, image } = webUser;
    let [isOpen, setIsOpen] = useState(false)
    const closeModal = () => setIsOpen(false)
+
+  const handleStatus = async()=>{
+      try{
+      await axiosSecure.patch('/update-status',{
+        email : webUser?.email 
+      })
+      toast.success(`${webUser.name} Status Changed`)
+      refetch()
+ 
+    }catch(err){
+      toast('Something went Wrong ... Try Again ..')
+      console.log(err)
+    }finally{
+      console.log('status Updated')
+  }
+  }
+
+
   return (
     <tr className="border-b hover:bg-gray-50">
       <td className="px-4 py-3">
@@ -50,9 +71,16 @@ const UsersDataRow = ({ webUser,user,refetch }) => {
       </td>
 
       <td className="px-4 py-3 text-center">
-        <button className="px-3 py-1 rounded-md bg-red-500 text-white text-xs">
-          Block
+        {
+          status === 'active' && <button onClick={handleStatus} className="px-3 py-1 rounded-md bg-red-500 text-white text-xs">
+       Block
         </button>
+        }
+        {
+          status === 'block' && <button onClick={handleStatus} className="px-3 py-1 rounded-md bg-blue-500 text-white text-xs">
+      Unblock
+        </button>
+        }
       </td>
     </tr>
   );
