@@ -142,12 +142,20 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
             </>
           )}
 
-          <Link
+          {
+            request.status ==="pending"? (<Link
             to={`/dashboard/edit-request/${request._id}`}
             className="btn btn-xs btn-info"
           >
             Edit
-          </Link>
+          </Link>) : (<span
+        
+            className="btn btn-xs btn-disabled  "
+            
+          >
+            Edit
+          </span>)
+          }
 
           <button className="btn btn-xs btn-error">Delete</button>
 

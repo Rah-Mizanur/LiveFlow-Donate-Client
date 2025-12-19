@@ -10,11 +10,11 @@ import useUserStatus from "../../../../hooks/useUserStatus";
 
 const CreateDonationRequests = () => {
   const { user } = useAuth();
-  const axiosSecure  = useAxiosSecure();
+  const axiosSecure = useAxiosSecure();
   const [zilas, setZilas] = useState([]); // Zilas (District) data
   const [upazilas, setUpazilas] = useState([]); // All Upazilas data
-  const {status,isStatusLoading} = useUserStatus()
-  console.log(status)
+  const { status, isStatusLoading } = useUserStatus();
+  console.log(status);
   const {
     register,
     handleSubmit,
@@ -58,7 +58,10 @@ const CreateDonationRequests = () => {
     reset: mutationReset,
   } = useMutation({
     mutationFn: async (payload) =>
-      await axiosSecure.post(`${import.meta.env.VITE_API_URL}/create-request`, payload),
+      await axiosSecure.post(
+        `${import.meta.env.VITE_API_URL}/create-request`,
+        payload
+      ),
     onMutate: (payload) => {
       console.log("i will post this data to DB", payload);
     },
@@ -101,9 +104,9 @@ const CreateDonationRequests = () => {
         donationDate,
         donationTime,
       };
-      await mutateAsync(bloodRequestData)
-      reset()
-        } catch (err) {
+      await mutateAsync(bloodRequestData);
+      reset();
+    } catch (err) {
       console.log(err);
     }
   };
@@ -111,398 +114,211 @@ const CreateDonationRequests = () => {
   if (isPending) return <LoadingSpinner></LoadingSpinner>;
   if (isError) return <ErrorPage></ErrorPage>;
   return (
- <>
- {
-  status === 'block' ? ( 
-  <div  className="p-4 md:p-6 max-w-3xl mx-auto">
-      <h2 className="text-2xl bg-blue-200 p-3 text-red-600 font-semibold mb-6">
+    <>
+      <div className="p-4 md:p-6 max-w-3xl mx-auto">
+        {
+          status === 'block' ? ( <h2 className="text-2xl bg-blue-200 p-3 text-red-600 font-semibold mb-6">
       Your Status is block so you cannot Create Donation Requests 🥲
-      </h2>
+      </h2>) :( <h2 className="text-2xl font-semibold mb-6">
+          Create Donation Request 🩸
+        </h2>)
+        }
+       
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Requester Name */}
-        <div>
-          <label className="label">Requester Name</label>
-          <input
-            type="text"
-            {...register("registererName")}
-            value={user?.name}
-            disabled
-            className="input input-bordered w-full bg-gray-100"
-          />
-        </div>
-
-        {/* Requester Email */}
-        <div>
-          <label className="label">Requester Email</label>
-          <input
-            type="email"
-            value={user?.email}
-            disabled
-            readOnly
-            className="input input-bordered w-full bg-gray-100"
-          />
-        </div>
-
-        {/* Recipient Name */}
-        <div>
-          <label className="label">Recipient Name</label>
-          <input
-            type="text"
-            {...register("recipientName")}
-            name="recipientName"
-            required
-               disabled
-            className="input input-bordered w-full"
-          />
-        </div>
-
-        {/* District & Upazila */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          {/* Requester Name */}
           <div>
-            <label className="block mb-1 text-sm">District</label>
-            <select
-              {...register("recipientZila", {
-                required: "District is required",
-              })}
-              defaultValue=""
-                 disabled
-              className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
-            >
-              <option value="" disabled>
-                Select District
-              </option>
-              {zilas.map((district) => (
-                <option key={district.id}    disabled value={district.id}>
-                  {district.name}
-                </option>
-              ))}
-            </select>
-            {errors.recipientZila && (
-              <p className="text-red-500 text-xs mt-1">{errors.recipientZila.message}</p>
-            )}
+            <label className="label">Requester Name</label>
+            <input
+              type="text"
+              {...register("registererName")}
+                value={user?.displayName}
+              className="input input-bordered w-full bg-gray-100"
+            />
           </div>
+
+          {/* Requester Email */}
           <div>
-            <label className="block mb-1 text-sm">Upazila</label>
+            <label className="label">Requester Email</label>
+            <input
+              type="email"
+              value={user?.email}
+              readOnly
+              className="input input-bordered w-full bg-gray-100"
+            />
+          </div>
+
+          {/* Recipient Name */}
+          <div>
+            <label className="label">Recipient Name</label>
+            <input
+              type="text"
+              {...register("recipientName")}
+              name="recipientName"
+              required
+            
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          {/* District & Upazila */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block mb-1 text-sm">District</label>
+              <select
+                {...register("recipientZila", {
+                  required: "District is required",
+                })}
+                defaultValue=""
+                className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
+              >
+                <option value="" disabled>
+                  Select District
+                </option>
+                {zilas.map((district) => (
+                  <option key={district.id} value={district.id}>
+                    {district.name}
+                  </option>
+                ))}
+              </select>
+              {errors.recipientZila && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.recipientZila.message}
+                </p>
+              )}
+            </div>
+            <div>
+              <label className="block mb-1 text-sm">Upazila</label>
+              <select
+                {...register("recipientUpazila", {
+                  required: "Upazila is required",
+                })}
+                defaultValue=""
+                disabled={!selectedDistrict}
+                className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
+
+                // Disable if no district is selected or no upazilas are available
+              >
+                <option value="" disabled>
+                  {selectedDistrict
+                    ? "Select Upazila"
+                    : "Select District first"}
+                </option>
+                {filteredUpazilas.map((upazila) => (
+                  <option key={upazila.id} value={upazila.id}>
+                    {upazila.name}
+                  </option>
+                ))}
+              </select>
+              {errors.recipientUpazila && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.recipientUpazila.message}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Hospital Name */}
+          <div>
+            <label className="label">Hospital Name</label>
+            <input
+              type="text"
+              name="hospitalName"
+              {...register("hospitalName")}
+              required
+              placeholder="Dhaka Medical College Hospital"
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          {/* Full Address */}
+          <div>
+            <label className="label">Full Address</label>
+            <input
+              type="text"
+              name="fullAddress"
+              {...register("recipientAddress")}
+              required
+              placeholder="Zahir Raihan Rd, Dhaka"
+              className="input input-bordered w-full"
+            />
+          </div>
+
+          {/* Blood Group */}
+          <div>
+            <label className="block mb-1 text-sm">Blood Group</label>
             <select
-              {...register("recipientUpazila", {
-                required: "Upazila is required",
+              {...register("bloodGroup", {
+                required: "Blood Group is required",
               })}
               defaultValue=""
-              disabled={!selectedDistrict}
-                 
               className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
-
-              // Disable if no district is selected or no upazilas are available
             >
               <option value="" disabled>
-                {selectedDistrict ? "Select Upazila" : "Select District first"}
+                Select Blood Group
               </option>
-              {filteredUpazilas.map((upazila) => (
-                <option key={upazila.id} disabled value={upazila.id}>
-                  {upazila.name}
+              {bloodGroups.map((bg) => (
+                <option key={bg} value={bg}>
+                  {bg}
                 </option>
               ))}
             </select>
-            {errors.recipientUpazila && (
+            {errors.bloodGroup && (
               <p className="text-red-500 text-xs mt-1">
-                {errors.recipientUpazila.message}
+                {errors.bloodGroup.message}
               </p>
             )}
           </div>
-        </div>
 
-        {/* Hospital Name */}
-        <div>
-          <label className="label">Hospital Name</label>
-          <input
-            type="text"
-            name="hospitalName"
-            {...register("hospitalName")}
-            required
-            disabled
-            placeholder="Dhaka Medical College Hospital"
-            className="input input-bordered w-full"
-          />
-        </div>
+          {/* Date & Time */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="label">Donation Date</label>
+              <input
+                type="date"
+                {...register("donationDate")}
+                name="donationDate"
+                required
+                className="input input-bordered w-full"
+              />
+            </div>
 
-        {/* Full Address */}
-        <div>
-          <label className="label">Full Address</label>
-          <input
-            type="text"
-            name="fullAddress"
-            disabled
-            {...register("recipientAddress")}
-            required
-            placeholder="Zahir Raihan Rd, Dhaka"
-            className="input input-bordered w-full"
-          />
-        </div>
+            <div>
+              <label className="label">Donation Time</label>
+              <input
+                type="time"
+                {...register("donationTime")}
+                name="donationTime"
+                required
+                className="input input-bordered w-full"
+              />
+            </div>
+          </div>
 
-        {/* Blood Group */}
-        <div>
-          <label className="block mb-1 text-sm">Blood Group</label>
-          <select
-            {...register("bloodGroup", {
-              required: "Blood Group is required",
-            })}
-            defaultValue=""
-            className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
-          >
-            <option value="" disabled>
-               Select Blood Group
-            </option>
-            {bloodGroups.map((bg) => (
-              <option key={bg} value={bg}>
-                {bg}
-              </option>
-            ))}
-          </select>
-          {errors.bloodGroup && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.bloodGroup.message}
-            </p>
-          )}
-        </div>
-
-        {/* Date & Time */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Request Message */}
           <div>
-            <label className="label">Donation Date</label>
-            <input
-              type="date"
-              {...register("donationDate")}
-              name="donationDate"
+            <label className="label">Request Message</label>
+            <textarea
+              name="requestMessage"
+              {...register("requestMessage")}
+              rows="4"
               required
-              disabled
-              className="input input-bordered w-full"
-            />
+              placeholder="Explain why blood is needed..."
+              className="textarea textarea-bordered w-full"
+            ></textarea>
           </div>
 
-          <div>
-            <label className="label">Donation Time</label>
-            <input
-              type="time"
-              {...register("donationTime")}
-              name="donationTime"
-              required
-              disabled
-              className="input input-bordered w-full"
-            />
-          </div>
-        </div>
-
-        {/* Request Message */}
-        <div>
-          <label className="label">Request Message</label>
-          <textarea
-            name="requestMessage"
-            {...register("requestMessage")}
-            rows="4"
-            required
-            disabled
-            placeholder="Explain why blood is needed..."
-            className="textarea textarea-bordered w-full"
-          ></textarea>
-        </div>
-
-        {/* Submit Button */}
-        <button type="submit" className="btn btn-primary w-full">
-          Request Blood
-        </button>
-      </form>
-    </div>): ( <div  className="p-4 md:p-6 max-w-3xl mx-auto">
-      <h2 className="text-2xl font-semibold mb-6">
-        Create Donation Request 🩸
-      </h2>
-
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Requester Name */}
-        <div>
-          <label className="label">Requester Name</label>
-          <input
-            type="text"
-            {...register("registererName")}
-            value={user?.name}
-            className="input input-bordered w-full bg-gray-100"
-          />
-        </div>
-
-        {/* Requester Email */}
-        <div>
-          <label className="label">Requester Email</label>
-          <input
-            type="email"
-            value={user?.email}
-            readOnly
-            className="input input-bordered w-full bg-gray-100"
-          />
-        </div>
-
-        {/* Recipient Name */}
-        <div>
-          <label className="label">Recipient Name</label>
-          <input
-            type="text"
-            {...register("recipientName")}
-            name="recipientName"
-            required
-            className="input input-bordered w-full"
-          />
-        </div>
-
-        {/* District & Upazila */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block mb-1 text-sm">District</label>
-            <select
-              {...register("recipientZila", {
-                required: "District is required",
-              })}
-              defaultValue=""
-              className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
-            >
-              <option value="" disabled>
-                Select District
-              </option>
-              {zilas.map((district) => (
-                <option key={district.id} value={district.id}>
-                  {district.name}
-                </option>
-              ))}
-            </select>
-            {errors.recipientZila && (
-              <p className="text-red-500 text-xs mt-1">{errors.recipientZila.message}</p>
-            )}
-          </div>
-          <div>
-            <label className="block mb-1 text-sm">Upazila</label>
-            <select
-              {...register("recipientUpazila", {
-                required: "Upazila is required",
-              })}
-              defaultValue=""
-              disabled={!selectedDistrict}
-              className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
-
-              // Disable if no district is selected or no upazilas are available
-            >
-              <option value="" disabled>
-                {selectedDistrict ? "Select Upazila" : "Select District first"}
-              </option>
-              {filteredUpazilas.map((upazila) => (
-                <option key={upazila.id} value={upazila.id}>
-                  {upazila.name}
-                </option>
-              ))}
-            </select>
-            {errors.recipientUpazila && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.recipientUpazila.message}
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Hospital Name */}
-        <div>
-          <label className="label">Hospital Name</label>
-          <input
-            type="text"
-            name="hospitalName"
-            {...register("hospitalName")}
-            required
-            placeholder="Dhaka Medical College Hospital"
-            className="input input-bordered w-full"
-          />
-        </div>
-
-        {/* Full Address */}
-        <div>
-          <label className="label">Full Address</label>
-          <input
-            type="text"
-            name="fullAddress"
-            {...register("recipientAddress")}
-            required
-            placeholder="Zahir Raihan Rd, Dhaka"
-            className="input input-bordered w-full"
-          />
-        </div>
-
-        {/* Blood Group */}
-        <div>
-          <label className="block mb-1 text-sm">Blood Group</label>
-          <select
-            {...register("bloodGroup", {
-              required: "Blood Group is required",
-            })}
-            defaultValue=""
-            className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
-          >
-            <option value="" disabled>
-               Select Blood Group
-            </option>
-            {bloodGroups.map((bg) => (
-              <option key={bg} value={bg}>
-                {bg}
-              </option>
-            ))}
-          </select>
-          {errors.bloodGroup && (
-            <p className="text-red-500 text-xs mt-1">
-              {errors.bloodGroup.message}
-            </p>
-          )}
-        </div>
-
-        {/* Date & Time */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="label">Donation Date</label>
-            <input
-              type="date"
-              {...register("donationDate")}
-              name="donationDate"
-              required
-              className="input input-bordered w-full"
-            />
-          </div>
-
-          <div>
-            <label className="label">Donation Time</label>
-            <input
-              type="time"
-              {...register("donationTime")}
-              name="donationTime"
-              required
-              className="input input-bordered w-full"
-            />
-          </div>
-        </div>
-
-        {/* Request Message */}
-        <div>
-          <label className="label">Request Message</label>
-          <textarea
-            name="requestMessage"
-            {...register("requestMessage")}
-            rows="4"
-            required
-            placeholder="Explain why blood is needed..."
-            className="textarea textarea-bordered w-full"
-          ></textarea>
-        </div>
-
-        {/* Submit Button */}
-        <button type="submit" className="btn btn-primary w-full">
-          Request Blood
-        </button>
-      </form>
-    </div>)
- }
- </>
+          {/* Submit Button */}
+         {
+          status ==='block' ? ( <button type="submit" disabled  className="btn btn-primary w-full">
+            Request Blood
+          </button>) : ( <button type="submit"  className="btn btn-primary w-full">
+            Request Blood
+          </button>)
+         }
+        </form>
+      </div>
+    </>
   );
 };
 

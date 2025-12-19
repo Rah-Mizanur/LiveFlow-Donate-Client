@@ -7,49 +7,17 @@ import { useParams } from "react-router";
 
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import useDistrictUpazila from "../../../hooks/useDistrictUpazila";
+import Label from "../../../components/Shared/Label/Label";
 
 const EditRequest = () => {
   const { user } = useAuth();
   const { id } = useParams();
 
   const axiosSecure = useAxiosSecure();
-  const [zilas, setZilas] = useState([]); // Zilas (District) data
-  const [upazilas, setUpazilas] = useState([]); // All Upazilas data
-  
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors },
-  } = useForm();
+
+
   //   location data
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const zilaResponse = await fetch("/zilaData.json");
-        const zilaData = await zilaResponse.json();
 
-        const upzilaResponse = await fetch("/upzilaData.json");
-        const upzilaData = await upzilaResponse.json();
-        setUpazilas(upzilaData);
-        setZilas(zilaData);
-        if (zilaData.length > 0) {
-          // selectedDistrict has need a value immediately
-          setValue("recipientZila", zilaData[0].id);
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchData();
-  }, []);
- 
-
- const selectedDistrict = watch("recipientZila");
-  const filteredUpazilas = upazilas.filter(
-    (upazila) => upazila.district_id === selectedDistrict
-  );
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -62,12 +30,36 @@ const EditRequest = () => {
       return result.data;
     },
   });
- const { districtName, upazilaName } = useDistrictUpazila(
-        reqDetails.recipientZila, 
-        reqDetails.recipientUpazila
-    );
 
-console.log(districtName)
+    const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+        defaultValues: {
+      registererName: reqDetails.registererName || "",
+      recipientName: reqDetails.recipientName || "",
+      recipientAddress: reqDetails.recipientAddress || "",
+      hospitalName: reqDetails.hospitalName || "",
+      zila: reqDetails.recipientZila || "",
+      upazila: reqDetails.recipientUpazila || "",
+      bloodGroup: reqDetails.bloodGroup || "",
+      donationDate: reqDetails.donationDate || "",
+      donationTime: reqDetails.donationTime || "",
+      requestMessage: reqDetails.requestMessage || "",
+    },
+  });
+
+    const selectedDistrict = watch('zila');
+  const selectedUpazila = watch("upazila");
+  const {
+    zilas,
+    filteredUpazilas,
+    districtName,
+    upazilaName,
+    isLoading: locationLoading,
+  } = useDistrictUpazila(selectedDistrict, selectedUpazila);
   const onSubmit = () => {
     console.log("okay");
   };
@@ -75,7 +67,7 @@ console.log(districtName)
   return (
     <div className="p-4 md:p-6 max-w-3xl mx-auto">
       <h2 className="text-2xl font-semibold mb-6">
-        Create Donation Request 🩸
+        Edit Your Donation Request 🩸
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
@@ -85,7 +77,7 @@ console.log(districtName)
           <input
             type="text"
             {...register("registererName")}
-           defaultValue={reqDetails.registererName}
+            defaultValue={reqDetails.registererName}
             className="input input-bordered w-full bg-gray-100"
           />
         </div>
@@ -116,55 +108,44 @@ console.log(districtName)
 
         {/* District & Upazila */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* District */}
           <div>
-            <label className="block mb-1 text-sm">District</label>
+            <Label>District</Label>
             <select
-              {...register("recipientZila", {
-                required: "District is required",
-              })}
-              defaultValue={districtName}
-              className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
+              {...register("zila", { required: true })}
+              className="border p-2 w-full rounded"
             >
-              <option value="" disabled>
-                Select District
-              </option>
-              {zilas.map((district) => (
-                <option key={district.id} value={district.id}>
-                  {district.name}
+              <option value="">{districtName}</option>
+              {zilas.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
                 </option>
               ))}
             </select>
-            {errors.recipientZila && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.recipientZila.message}
-              </p>
+            {errors.zila && (
+              <p className="text-red-500 text-xs">District is required</p>
             )}
           </div>
-          <div>
-            <label className="block mb-1 text-sm">Upazila</label>
-            <select
-              {...register("recipientUpazila", {
-                required: "Upazila is required",
-              })}
-              defaultValue={reqDetails.recipientUpazila}
-              disabled={!selectedDistrict}
-              className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
 
-              // Disable if no district is selected or no upazilas are available
+          {/* Upazila */}
+          <div>
+            <Label>Upazila</Label>
+            <select
+              {...register("upazila", { required: true })}
+              disabled={!watch("zila")}
+              className="border p-2 w-full rounded"
             >
-              <option value="" disabled>
-                {selectedDistrict ? "Select Upazila" : "Select District first"}
+              <option value="">
+             {upazilaName}
               </option>
-              {filteredUpazilas.map((upazila) => (
-                <option key={upazila.id} value={upazila.id}>
-                  {upazila.name}
+              {filteredUpazilas.map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.name}
                 </option>
               ))}
             </select>
-            {errors.recipientUpazila && (
-              <p className="text-red-500 text-xs mt-1">
-                {errors.recipientUpazila.message}
-              </p>
+            {errors.upazila && (
+              <p className="text-red-500 text-xs">Upazila is required</p>
             )}
           </div>
         </div>
@@ -243,7 +224,7 @@ console.log(districtName)
               type="time"
               {...register("donationTime")}
               name="donationTime"
-                  defaultValue={reqDetails.donationTime}
+              defaultValue={reqDetails.donationTime}
               required
               className="input input-bordered w-full"
             />
@@ -256,7 +237,7 @@ console.log(districtName)
           <textarea
             name="requestMessage"
             {...register("requestMessage")}
-                defaultValue={reqDetails.requestMessage}
+            defaultValue={reqDetails.requestMessage}
             rows="4"
             required
             placeholder="Explain why blood is needed..."
