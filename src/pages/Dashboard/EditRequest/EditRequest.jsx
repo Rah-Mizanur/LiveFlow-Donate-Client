@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router";
+import { useParams,useNavigate } from "react-router";
 
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 import useDistrictUpazila from "../../../hooks/useDistrictUpazila";
 import Label from "../../../components/Shared/Label/Label";
+import toast from "react-hot-toast";
 
 const EditRequest = () => {
   const { user } = useAuth();
   const { id } = useParams();
+  const navigate = useNavigate()
 
   const axiosSecure = useAxiosSecure();
 
-
   //   location data
-
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
-  const { data: reqDetails = [], isLoading } = useQuery({
+  const { data: reqDetails = [], isLoading,refetch } = useQuery({
     queryKey: ["reqDetails", id, user?.email],
     queryFn: async () => {
       const result = await axiosSecure(
@@ -30,14 +30,13 @@ const EditRequest = () => {
       return result.data;
     },
   });
-
-    const {
+  const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
   } = useForm({
-        defaultValues: {
+    defaultValues: {
       registererName: reqDetails.registererName || "",
       recipientName: reqDetails.recipientName || "",
       recipientAddress: reqDetails.recipientAddress || "",
@@ -51,7 +50,7 @@ const EditRequest = () => {
     },
   });
 
-    const selectedDistrict = watch('zila');
+  const selectedDistrict = watch("zila");
   const selectedUpazila = watch("upazila");
   const {
     zilas,
@@ -60,8 +59,44 @@ const EditRequest = () => {
     upazilaName,
     isLoading: locationLoading,
   } = useDistrictUpazila(selectedDistrict, selectedUpazila);
-  const onSubmit = () => {
-    console.log("okay");
+ 
+  const onSubmit = async (data) => {
+    const {
+      bloodGroup,
+      donationDate,
+      donationTime,
+      requestMessage,
+      zila,
+      upazila,
+      recipientAddress,
+      hospitalName,
+  recipientName,
+    } = data;
+    const updateRequest = {
+      recipientName,
+      recipientZila : zila,
+      recipientUpazila : upazila,
+      donationDate,
+      donationTime,
+      recipientAddress,
+      hospitalName,
+      bloodGroup,
+      requestMessage,
+     
+    };
+    try {
+    await axiosSecure.patch('edit-request',{
+      id : reqDetails._id,
+      updateRequest
+    })
+    toast.success('Request Edit Successfully')
+    navigate('/dashboard')
+    } catch(err){
+      console.log(err)
+      toast('error happend')
+    }
+
+
   };
   if (isLoading) return <LoadingSpinner></LoadingSpinner>;
   return (
@@ -71,28 +106,7 @@ const EditRequest = () => {
       </h2>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* Requester Name */}
-        <div>
-          <label className="label">Requester Name</label>
-          <input
-            type="text"
-            {...register("registererName")}
-            defaultValue={reqDetails.registererName}
-            className="input input-bordered w-full bg-gray-100"
-          />
-        </div>
-
-        {/* Requester Email */}
-        <div>
-          <label className="label">Requester Email</label>
-          <input
-            type="email"
-            value={user?.email}
-            readOnly
-            className="input input-bordered w-full bg-gray-100"
-          />
-        </div>
-
+      
         {/* Recipient Name */}
         <div>
           <label className="label">Recipient Name</label>
@@ -115,7 +129,7 @@ const EditRequest = () => {
               {...register("zila", { required: true })}
               className="border p-2 w-full rounded"
             >
-              <option value="">{districtName}</option>
+              <option defaultValue={districtName}>{districtName}</option>
               {zilas.map((d) => (
                 <option key={d.id} value={d.id}>
                   {d.name}
@@ -135,9 +149,7 @@ const EditRequest = () => {
               disabled={!watch("zila")}
               className="border p-2 w-full rounded"
             >
-              <option value="">
-             {upazilaName}
-              </option>
+              <option defaultValue={upazilaName}>{upazilaName}</option>
               {filteredUpazilas.map((u) => (
                 <option key={u.id} value={u.id}>
                   {u.name}

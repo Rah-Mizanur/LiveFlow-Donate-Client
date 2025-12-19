@@ -3,30 +3,36 @@ import React, { useState } from 'react'
 import useAxiosSecure from '../../../hooks/useAxiosSecure'
 import toast from 'react-hot-toast'
 import useAuth from '../../../hooks/useAuth'
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-const UpdateStatusModal = ({isOpen,closeModal,statusRefetch,request}) => {
+const UpdateStatusModal = ({isOpen,closeModal,request}) => {
     const {user} = useAuth()
     console.log(request._id)
     const [updatedStatus ,setUpdatedStatus] = useState(request?.status)
     const axiosSecure = useAxiosSecure()
-    const handleStatus = async()=>{
-         try{
-      await axiosSecure.patch('/update-blood-status',{
-        id : request._id,
-        status : updatedStatus,
-        donorName : user.displayName ,
-        donorEmail : user.email
+    const queryClient = useQueryClient();
 
-      })
-      toast.success('Role Update Successfully')
-    
- 
-    }catch(err){
-      toast('Something went Wrong ... Try Again ..')
-      console.log(err)
-    }finally{
-      closeModal()
-    }
+const { mutate: updateStatus } = useMutation({
+  mutationFn: async () => {
+    return axiosSecure.patch("/update-blood-status", {
+      id: request._id,
+      status: updatedStatus,
+      donorName: user.displayName,
+      donorEmail: user.email,
+    });
+  },
+  onSuccess: () => {
+    toast.success("Status updated successfully");
+    queryClient.invalidateQueries(["bloodRequests"]); 
+    closeModal();
+  },
+  onError: () => {
+    toast.error("Something went wrong... Try again");
+  },
+});
+
+    const handleStatus = async()=>{
+     updateStatus()
     }
   return (
      <>

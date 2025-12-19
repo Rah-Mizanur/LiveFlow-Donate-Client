@@ -50,7 +50,7 @@ const AdminDashboard = ({user,allBloodReq,myBloodReq,allUsers}) => {
           </div>
           <div>
             <h2 className="text-xl font-semibold">{allBloodReq.length}</h2>
-            <p className="text-gray-600">Blood Donation Requests</p>
+            <p className="text-gray-600">Total Blood Donation Requests</p>
           </div>
         </div>
       </div>

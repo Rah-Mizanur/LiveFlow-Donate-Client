@@ -4,42 +4,47 @@ import { useState } from "react";
 import UpdateStatusModal from "../../Modal/UpdateStatusModal";
 import toast from "react-hot-toast";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure";
+import useRole from "../../../../hooks/useRole";
+import useAuth from "../../../../hooks/useAuth";
 
 const MyDonationRequestRow = ({ request, statusRefetch }) => {
+  const { user } = useAuth();
   const { districtName, upazilaName } = useDistrictUpazila(
     request.recipientZila,
     request.recipientUpazila
   );
-  const axiosSecure = useAxiosSecure()
+  const { role, isRoleLoading } = useRole();
+  const axiosSecure = useAxiosSecure();
   let [isOpen, setIsOpen] = useState(false);
   const closeModal = () => setIsOpen(false);
-  const handleStatusDone = async()=>{
-       try {
+  console.log(request.registererEmail);
+  const handleStatusDone = async () => {
+    try {
       await axiosSecure.patch("/update-blood-status-done", {
         id: request._id,
-        status: "done",  
+        status: "done",
       });
       toast.success("Status Update Successfully");
-       await statusRefetch()
+      await statusRefetch();
     } catch (err) {
       toast("Something went Wrong ... Try Again ..");
       console.log(err);
     }
-  }
+  };
 
-  const handleStatusCancel =async()=>{
-          try {
+  const handleStatusCancel = async () => {
+    try {
       await axiosSecure.patch("/update-blood-status-done", {
         id: request._id,
-        status: "cancel",  
+        status: "cancel",
       });
       toast.success("Status Update Successfully");
-      await  statusRefetch()
+      await statusRefetch();
     } catch (err) {
       toast("Something went Wrong ... Try Again ..");
       console.log(err);
     }
-  }
+  };
   return (
     <tr>
       <td>{request.recipientName}</td>
@@ -77,7 +82,7 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
         </td>
       )}
       {request.status === "inprogress" && (
-         <td className="px-4 py-3">
+        <td className="px-4 py-3">
           <span
             onClick={() => setIsOpen(true)}
             className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-blue-900 leading-tight"
@@ -91,7 +96,7 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
         </td>
       )}
       {request.status === "done" && (
-         <td className="px-4 py-3">
+        <td className="px-4 py-3">
           <span
             onClick={() => setIsOpen(true)}
             className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-blue-900 leading-tight"
@@ -105,7 +110,7 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
         </td>
       )}
       {request.status === "cancel" && (
-         <td className="px-4 py-3">
+        <td className="px-4 py-3">
           <span
             onClick={() => setIsOpen(true)}
             className="relative cursor-pointer inline-block px-3 py-1 font-semibold text-blue-900 leading-tight"
@@ -118,14 +123,13 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
           </span>
         </td>
       )}
-     
 
       {/* Donor info */}
       <td className="hidden lg:table-cell">
         {request.status === "pending" ? (
-       "-"
+          "-"
         ) : (
-            <>
+          <>
             <p className="capitalize">{request.donorName}</p>
             <p className="text-xs text-gray-500">{request.donorEmail}</p>
           </>
@@ -135,29 +139,50 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
       {/* Actions */}
       <td>
         <div className="flex flex-col md:flex-row gap-1 md:gap-2">
-          {request.status === "inprogress" && (
-            <>
-              <button onClick={handleStatusDone} className="btn btn-xs btn-success">Done</button>
-              <button onClick={handleStatusCancel} className="btn btn-xs btn-warning">Cancel</button>
-            </>
+         {request.status === "inprogress" &&
+  (
+    user?.email === request.registererEmail ||
+    role === "admin" ||
+    role === "volunteer"
+  ) && (
+    <>
+      <button
+        onClick={handleStatusDone}
+        className="btn btn-xs btn-success"
+      >
+        Done
+      </button>
+      <button
+        onClick={handleStatusCancel}
+        className="btn btn-xs btn-warning"
+      >
+        Cancel
+      </button>
+    </>
+)}
+
+
+          {request.status === "pending" &&
+          user?.email === request.registererEmail ? (
+            <Link
+              to={`/dashboard/edit-request/${request._id}`}
+              className="btn btn-xs btn-info"
+            >
+              Edit
+            </Link>
+          ) : (
+            <span className="btn btn-xs btn-disabled  ">Edit</span>
           )}
 
-          {
-            request.status ==="pending"? (<Link
-            to={`/dashboard/edit-request/${request._id}`}
-            className="btn btn-xs btn-info"
-          >
-            Edit
-          </Link>) : (<span
-        
-            className="btn btn-xs btn-disabled  "
-            
-          >
-            Edit
-          </span>)
-          }
-
-          <button className="btn btn-xs btn-error">Delete</button>
+          {user?.email === request.registererEmail && role === "volunteer" && (
+            <button className="btn btn-xs btn-error">Delete</button>
+          )}
+          {user?.email === request.registererEmail && role === "donor" && (
+            <button className="btn btn-xs btn-error">Delete</button>
+          )}
+          {role === "admin" && (
+            <button className="btn btn-xs btn-error">Delete</button>
+          )}
 
           <Link
             to={`/request/${request._id}`}

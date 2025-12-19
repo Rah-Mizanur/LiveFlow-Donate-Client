@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
 import { FaEdit } from "react-icons/fa";
 
 import Card from "../../../components/Shared/Card/Card";
@@ -11,15 +10,17 @@ import Input from "../../../components/Shared/Input/Input";
 import LoadingSpinner from "../../../components/Shared/LoadingSpinner";
 
 import useAuth from "../../../hooks/useAuth";
-import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useDistrictUpazila from "../../../hooks/useDistrictUpazila";
+import { imageUpload } from "../../../utils";
+import toast from "react-hot-toast";
+import {  useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 const Profile = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
-
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState("");
 
@@ -28,10 +29,11 @@ const Profile = () => {
     handleSubmit,
     watch,
     setValue,
+    reset,
     formState: { errors },
   } = useForm();
 
-  /* ---------------- Fetch Profile ---------------- */
+  //  get profile data 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile", user?.email],
     queryFn: async () => {
@@ -40,19 +42,22 @@ const Profile = () => {
     },
   });
 
-  /* ---------------- Set Form Values ---------------- */
-  useEffect(() => {
-    if (profile) {
-      setValue("name", profile.name);
-      setValue("email", profile.email);
-      setValue("zila", profile.zila);       // district ID
-      setValue("upazila", profile.upazila); // upazila ID
-      setValue("bloodGroup", profile.bloodGroup);
-      setProfileImage(profile.image);
-    }
-  }, [profile, setValue]);
 
-  /* ---------------- District & Upazila Hook ---------------- */
+
+  useEffect(() => {
+  if (profile) {
+    reset({
+      name: profile.name || "",
+      email: profile.email || "",
+      zila: profile.zila || "",
+      upazila: profile.upazila || "",
+      bloodGroup: profile.bloodGroup || "",
+      // image is file input, don't reset it
+    });
+    setProfileImage(profile.image || "");
+  }
+}, [profile]);
+
   const selectedDistrict = watch("zila");
   const selectedUpazila = watch("upazila");
 
@@ -64,17 +69,48 @@ const Profile = () => {
     isLoading: locationLoading,
   } = useDistrictUpazila(selectedDistrict, selectedUpazila);
 
-  /* ---------------- Save Handler ---------------- */
-  const onSave = (data) => {
-    console.log("Updated Profile:", data);
-    setIsEditing(false);
-  };
+ const onSave = async (data) => {
+  const { name, bloodGroup, zila, upazila, image } = data;
+    let imageUrl = profileImage; 
+    if (image && image.length > 0 && image[0] instanceof File) {
+      imageUrl = await imageUpload(image[0]);
+    }
+    const updatedProfile = {
+      name,
+      bloodGroup,
+      zila,
+      upazila,
+      image: imageUrl, // Use the new URL or the old one
+    };
+    
+   try{
+    await axiosSecure.patch("/profile-update",{
+      email : user?.email,
+      updatedProfile
+    })
+       toast.success("Status Update Successfully");
+      isEditing(true)
+   }catch(err){
+    toast(err)
+    console.log(err)
+   }
+   
+ 
+};
 
   if (isLoading || locationLoading) return <LoadingSpinner />;
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">Dashboard / Profile</h1>
+      <div className="p-6 bg-blue-100 rounded-lg shadow-md text-center">
+        <h1 className="text-2xl capitalize font-bold mb-2">
+          Welcome, {user?.displayName}!
+        </h1>
+        <p className="text-lg text-gray-700">
+          You are our honourable{" "}
+          <span className="capitalize ">{profile.role}</span>
+        </p>
+      </div>
 
       <Card>
         {/* Header */}
@@ -104,19 +140,20 @@ const Profile = () => {
             <div className="flex flex-col items-center gap-4">
               <img
                 src={profileImage}
+          
                 alt="avatar"
                 className="w-32 h-32 rounded-full object-cover"
               />
 
               {isEditing && (
-             <div>
-              <input
-                name="image"
-                {...register("image")}
-                type="file"
-                id="image"
-                accept="image/*"
-                className="block w-full text-sm text-gray-500
+                <div>
+                  <input
+                    name="image"
+                    {...register("image")}
+                    type="file"
+                    id="image"
+                    accept="image/*"
+                    className="block w-full text-sm text-gray-500
       file:mr-4 file:py-2 file:px-4
       file:rounded-md file:border-0
       file:text-sm file:font-semibold
@@ -125,11 +162,11 @@ const Profile = () => {
       bg-gray-100 border border-dashed border-[#2C9AD5] rounded-md cursor-pointer
       focus:outline-none focus:ring-2 focus:ring-[#2C9AD5] focus:[#2C9AD5]
       py-2"
-              />
-              <p className="mt-1 text-xs text-gray-400">
-                PNG, JPG or JPEG (max 2MB)
-              </p>
-            </div>
+                  />
+                  <p className="mt-1 text-xs text-gray-400">
+                    PNG, JPG or JPEG (max 2MB)
+                  </p>
+                </div>
               )}
             </div>
 
@@ -137,12 +174,25 @@ const Profile = () => {
             <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label>Name</Label>
-                <Input defaultValue={profile.name} {...register("name")} disabled={!isEditing} />
+              {
+                !isEditing ? (<p className="py-2">{profile.name}</p>) : ( <input
+            type="text"
+            {...register("name")}
+            defaultValue={profile.name}
+            name="name"
+            required
+            className="input input-bordered w-full"
+          />)
+              }
               </div>
 
               <div>
                 <Label>Email</Label>
-                <Input defaultValue={profile.email} {...register("email")} disabled />
+                <Input
+                  defaultValue={profile.email}
+                  {...register("email")}
+                  disabled
+                />
               </div>
 
               {/* District */}
