@@ -16,14 +16,15 @@ import toast from "react-hot-toast";
 import {  useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
+
 const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
 const Profile = () => {
-  const { user } = useAuth();
+  const { user,updateUserProfile } = useAuth();
   const axiosSecure = useAxiosSecure();
   const [isEditing, setIsEditing] = useState(false);
   const [profileImage, setProfileImage] = useState("");
-
+ 
   const {
     register,
     handleSubmit,
@@ -69,33 +70,82 @@ const Profile = () => {
     isLoading: locationLoading,
   } = useDistrictUpazila(selectedDistrict, selectedUpazila);
 
- const onSave = async (data) => {
-  const { name, bloodGroup, zila, upazila, image } = data;
-    let imageUrl = profileImage; 
+//  const onSave = async (data) => {
+//   const { name, bloodGroup, zila, upazila, image } = data;
+//     let imageUrl = profileImage; 
+//     if (image && image.length > 0 && image[0] instanceof File) {
+//       imageUrl = await imageUpload(image[0]);
+//     }
+//     const updatedProfile = {
+//       name,
+//       bloodGroup,
+//       zila,
+//       upazila,
+//       image: imageUrl, // Use the new URL or the old one
+//     };
+    
+//    try{
+//     await axiosSecure.patch("/profile-update",{
+//       email : user?.email,
+//       updatedProfile
+//     })
+//        toast.success("Status Update Successfully");
+//       isEditing(true)
+//       updateUserProfile(name,imageUrl)
+//    }catch(err){
+//     toast(err)
+//     console.log(err)
+//    }
+   
+ 
+// };
+const onSave = async (data) => {
+  try {
+    const { name, bloodGroup, zila, upazila, image } = data;
+
+    let imageUrl = profileImage;
+
+    // Upload new image if selected
     if (image && image.length > 0 && image[0] instanceof File) {
       imageUrl = await imageUpload(image[0]);
+ 
     }
+
     const updatedProfile = {
       name,
       bloodGroup,
       zila,
       upazila,
-      image: imageUrl, // Use the new URL or the old one
+      image: imageUrl,
     };
-    
-   try{
-    await axiosSecure.patch("/profile-update",{
-      email : user?.email,
-      updatedProfile
-    })
-       toast.success("Status Update Successfully");
-      isEditing(true)
-   }catch(err){
-    toast(err)
-    console.log(err)
-   }
-   
- 
+
+    toast.loading("Updating profile...", { id: "profile-update" });
+
+    // Update backend/database
+    await axiosSecure.patch("/profile-update", {
+      email: user?.email,
+      updatedProfile,
+    });
+    await updateUserProfile(name,imageUrl)
+  
+
+    // Success feedback
+    toast.success("Profile updated successfully!", { id: "profile-update" });
+    // Update local state with new image (for instant UI update)
+    setProfileImage(imageUrl);
+    // Exit edit mode
+    setIsEditing(false);
+
+  } catch (err) {
+    console.error("Profile update failed:", err);
+
+    const errorMessage =
+      err.response?.data?.message ||
+      err.message ||
+      "Failed to update profile. Please try again.";
+
+    toast.error(errorMessage, { id: "profile-update" });
+  }
 };
 
   if (isLoading || locationLoading) return <LoadingSpinner />;

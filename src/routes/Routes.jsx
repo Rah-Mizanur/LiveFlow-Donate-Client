@@ -15,7 +15,9 @@ import AllBloodDonationRequest from "../pages/Dashboard/Admin/AllBloodDonationRe
 import EditRequest from "../pages/Dashboard/EditRequest/EditRequest";
 import BloodRequestDetails from "../pages/Dashboard/BloodRequestDetails/BloodRequestDetails";
 import DashboardHome from "../pages/Dashboard/DashboardHome/DashBoardHome";
-
+import PendingDonationRequest from "../pages/pendingDonationReq/PendingDonationRequest";
+import FundingPage from "../pages/FundingPage/FundingPage";
+import SearchRequest from "../components/Home/Searchrequest/SearchRequest";
 
 export const router = createBrowserRouter([
   {
@@ -24,51 +26,62 @@ export const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       {
-        path: "/",
+        path: "",
         element: <Home />,
       },
       {
-        path :'request/:id',
-        element : <BloodRequestDetails></BloodRequestDetails>
+        path: "request/:id",
+        element: <BloodRequestDetails></BloodRequestDetails>,
+      },
+      {
+        path: "donation-requests",
+        element: <PendingDonationRequest></PendingDonationRequest>,
+      },
+      {
+        path: "funding",
+        element:<FundingPage></FundingPage>,
+      },
+      {
+        path: "search-request",
+        element:<SearchRequest></SearchRequest>
       },
     ],
   },
   { path: "/login", element: <Login /> },
   { path: "/signup", element: <SignUp /> },
-    
-  {
-    path :'/dashboard',
-    element : <DashboardLayout></DashboardLayout>,
-    children : [
-      {
-        index : true ,
-        element : <DashboardHome></DashboardHome>
-      },
-      {
-        path : 'profile',
-        element : <Profile></Profile>
-      },
-      {
-        path :'my-donation-requests',
-        element : <MyDonationRequests></MyDonationRequests>
-      },
-      {
-        path :'create-donation-request',
-        element : <CreateDonationRequests></CreateDonationRequests>
-      },
-      {
-        path :'all-users',
-        element : <AllUsers></AllUsers>
-      },{
-        path:'all-blood-donation-request',
-        element: <AllBloodDonationRequest></AllBloodDonationRequest>
-      },
-      {
-        path : 'edit-request/:id',
-        element : <EditRequest></EditRequest>
-      },
-    
-    ]
-  }
 
+  {
+    path: "/dashboard",
+    element: <DashboardLayout></DashboardLayout>,
+    children: [
+      {
+        index: true,
+        element: <DashboardHome></DashboardHome>,
+      },
+      {
+        path: "profile",
+        element: <Profile></Profile>,
+      },
+      {
+        path: "my-donation-requests",
+        element: <MyDonationRequests></MyDonationRequests>,
+      },
+      {
+        path: "create-donation-request",
+        element: <CreateDonationRequests></CreateDonationRequests>,
+      },
+      {
+        path: "all-users",
+        element: <AllUsers></AllUsers>,
+      },
+      {
+        path: "all-blood-donation-request",
+        element: <AllBloodDonationRequest></AllBloodDonationRequest>,
+      },
+      {
+        path: "edit-request/:id",
+        element: <EditRequest></EditRequest>,
+      },
+    ],
+  },
 ]);

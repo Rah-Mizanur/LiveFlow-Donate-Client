@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import useAxiosSecure from "../../../../hooks/useAxiosSecure";
 import useRole from "../../../../hooks/useRole";
 import useAuth from "../../../../hooks/useAuth";
+import Swal from "sweetalert2";
 
 const MyDonationRequestRow = ({ request, statusRefetch }) => {
   const { user } = useAuth();
@@ -45,6 +46,36 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
       console.log(err);
     }
   };
+  const handleDelete = async () => {
+  const result = await Swal.fire({
+    title: "Are you sure?",
+    text: "You won't be able to revert this!",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Yes, delete it!"
+  });
+
+  if (result.isConfirmed) {
+    try {
+      await axiosSecure.post("/delete-request", {
+        id: request._id,
+        request,
+      });
+      toast.success("Request deleted"); // Assuming toast.success for success (common pattern; adjust if it's toast.delete)
+      await statusRefetch()
+      Swal.fire({
+        title: "Deleted!",
+        text: "Your request has been deleted.",
+        icon: "success"
+      });
+    } catch (err) {
+      console.log(err);
+      toast.error("Error happened"); // Assuming toast.error for errors
+    }
+  }
+};
   return (
     <tr>
       <td>{request.recipientName}</td>
@@ -139,28 +170,25 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
       {/* Actions */}
       <td>
         <div className="flex flex-col md:flex-row gap-1 md:gap-2">
-         {request.status === "inprogress" &&
-  (
-    user?.email === request.registererEmail ||
-    role === "admin" ||
-    role === "volunteer"
-  ) && (
-    <>
-      <button
-        onClick={handleStatusDone}
-        className="btn btn-xs btn-success"
-      >
-        Done
-      </button>
-      <button
-        onClick={handleStatusCancel}
-        className="btn btn-xs btn-warning"
-      >
-        Cancel
-      </button>
-    </>
-)}
-
+          {request.status === "inprogress" &&
+            (user?.email === request.registererEmail ||
+              role === "admin" ||
+              role === "volunteer") && (
+              <>
+                <button
+                  onClick={handleStatusDone}
+                  className="btn btn-xs btn-success"
+                >
+                  Done
+                </button>
+                <button
+                  onClick={handleStatusCancel}
+                  className="btn btn-xs btn-warning"
+                >
+                  Cancel
+                </button>
+              </>
+            )}
 
           {request.status === "pending" &&
           user?.email === request.registererEmail ? (
@@ -175,13 +203,19 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
           )}
 
           {user?.email === request.registererEmail && role === "volunteer" && (
-            <button className="btn btn-xs btn-error">Delete</button>
+            <button onClick={handleDelete} className="btn btn-xs btn-error">
+              Delete
+            </button>
           )}
           {user?.email === request.registererEmail && role === "donor" && (
-            <button className="btn btn-xs btn-error">Delete</button>
+            <button onClick={handleDelete} className="btn btn-xs btn-error">
+              Delete
+            </button>
           )}
           {role === "admin" && (
-            <button className="btn btn-xs btn-error">Delete</button>
+            <button onClick={handleDelete} className="btn  btn-xs btn-error">
+              Delete
+            </button>
           )}
 
           <Link

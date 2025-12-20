@@ -11,35 +11,44 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false)
 
   const navLinks = (
-    <div className="hidden md:flex items-center gap-8">
-      <NavLink
-        to="/donation-requests"
-        className="text-gray-700 font-medium hover:text-[#2D9CDB] transition"
-      >
-        Donation Requests
-      </NavLink>
+   <div className="hidden md:flex items-center gap-8">
+  <NavLink
+    to="/donation-requests"
+    className={({ isActive }) =>
+      `text-gray-700 font-medium transition ${
+        isActive ? "border-b-4 border-[#e26048]" : "hover:text-[#2D9CDB]"
+      }`
+    }
+  >
+    Donation Requests
+  </NavLink>
 
-      {user && (
-        <NavLink
-          to="/funding"
-          className="text-gray-700 font-medium hover:text-[#2D9CDB] transition"
-        >
-          Funding
-        </NavLink>
-      )}
-    </div>
+  {user && (
+    <NavLink
+      to="/funding"
+      className={({ isActive }) =>
+        `text-gray-700 font-medium transition ${
+          isActive ? " border-b-4 border-[#e26048]" : "hover:text-[#2D9CDB]"
+        }`
+      }
+    >
+      Funding
+    </NavLink>
+  )}
+</div>
+
   )
 
   return (
-    <div className="fixed w-full bg-white z-10 shadow-sm">
+    <div className="fixed w-full bg-[#bedae8] z-10 shadow-sm">
       <div className="py-4">
         <Container>
           <div className="flex items-center justify-between">
 
             {/* Left: Logo */}
             <Link to="/">
-              <img src={logo} alt="logo" width="110" />
-            </Link>
+              <img src={logo} alt="logo" width="110" /> 
+                 </Link>
 
             {/* Middle: NavLinks */}
             {navLinks}

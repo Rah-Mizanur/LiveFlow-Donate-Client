@@ -2,8 +2,21 @@ import React from 'react'
 import MyDonationRequestRow from '../../../../components/Dashboard/TableRows/MyBloodRequestRow/MyDonationRequestRow'
 import { FaHandHoldingUsd, FaTint, FaUsers } from 'react-icons/fa'
 import { Link } from 'react-router'
+import { useQuery } from '@tanstack/react-query'
+import useAxiosSecure from '../../../../hooks/useAxiosSecure'
 
 const AdminDashboard = ({user,allBloodReq,myBloodReq,allUsers}) => {
+  const axiosSecure = useAxiosSecure()
+     const {data: deletedBloodReq = [] } = useQuery({
+       queryKey: ['deletedBloodReq'],
+      queryFn : async ()=> {
+        const result = await axiosSecure(`${import.meta.env.VITE_API_URL}/deleted-blood-req`)
+        return result.data
+      }
+    })
+
+    const totalBloodReq = allBloodReq.length + deletedBloodReq.length
+    console.log(totalBloodReq)
   return (
     <div>  
     <div className="p-6 space-y-8">
@@ -49,7 +62,7 @@ const AdminDashboard = ({user,allBloodReq,myBloodReq,allUsers}) => {
             <FaTint />
           </div>
           <div>
-            <h2 className="text-xl font-semibold">{allBloodReq.length}</h2>
+            <h2 className="text-xl font-semibold">{totalBloodReq}</h2>
             <p className="text-gray-600">Total Blood Donation Requests</p>
           </div>
         </div>
