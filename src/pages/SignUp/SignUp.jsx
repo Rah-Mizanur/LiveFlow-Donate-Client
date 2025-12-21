@@ -6,6 +6,7 @@ import { toast } from "react-hot-toast";
 import { TbFidgetSpinner } from "react-icons/tb";
 import { Link, useLocation, useNavigate } from "react-router";
 import { imageUpload, saveOrUpdateUser } from "../../utils";
+import useDistrictUpazila from "../../hooks/useDistrictUpazila";
 
 const SignUp = () => {
   const { createUser, updateUserProfile, loading } = useAuth();
@@ -14,53 +15,33 @@ const SignUp = () => {
   const location = useLocation();
   const from = location.state?.from || "/";
 
-  const [zilas, setZilas] = useState([]); // Zilas (District) data
-  const [upazilas, setUpazilas] = useState([]); // All Upazilas data
-
   // Destructure useForm, including formState.errors for validation messages
   const {
     register,
     handleSubmit,
     watch,
-    setValue,
     formState: { errors },
   } = useForm();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const zilaResponse = await fetch("/zilaData.json");
-        const zilaData = await zilaResponse.json();
+    const selectedDistrict = watch("zila");
+  const selectedUpazila = watch("upazila");
 
-        const upzilaResponse = await fetch("/upzilaData.json");
-        const upzilaData = await upzilaResponse.json();
-        setUpazilas(upzilaData);
-        setZilas(zilaData);
-        if (zilaData.length > 0) {
-            // selectedDistrict has need a value immediately
-            setValue("zila", zilaData[0].id); 
-        }
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    fetchData();
-  }, [setValue]);
-  const selectedDistrict = watch("zila");
+  const {
+    zilas,
+    filteredUpazilas,
+    isLoading,
+  } = useDistrictUpazila(selectedDistrict, selectedUpazila);
 
-  const filteredUpazilas = upazilas.filter(
-    (upazila) => upazila.district_id === selectedDistrict
-  );
-   const onSubmit =async(data) => {
- const { name, email, password, bloodGroup, zila, upazila,image } = data;
+  const onSubmit = async (data) => {
+    const { name, email, password, bloodGroup, zila, upazila, image } = data;
 
- // Safety check for password match before calling auth (though react-hook-form handles it)
+    // Safety check for password match before calling auth (though react-hook-form handles it)
     if (data.password !== data.confirmPassword) {
       toast.error("Passwords do not match.");
       return;
     }
-const imageFile = image[0]
-        
+    const imageFile = image[0];
+
     try {
       // Upload the image and get the image URL
       const imageUrl = await imageUpload(imageFile);
@@ -91,7 +72,6 @@ const imageFile = image[0]
       toast.error(err?.message || "An error occurred.");
     }
   };
-
 
   const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
 
@@ -150,7 +130,7 @@ const imageFile = image[0]
               )}
             </div>
 
-                 {/* Image */}
+            {/* Image */}
             <div>
               <label
                 htmlFor="image"
@@ -213,7 +193,7 @@ const imageFile = image[0]
                 defaultValue=""
                 className="w-full px-3 py-2 border-[#2C9AD5] rounded-md bg-gray-100"
               >
-                <option value="" disabled>
+                <option value="">
                   Select District
                 </option>
                 {zilas.map((district) => (

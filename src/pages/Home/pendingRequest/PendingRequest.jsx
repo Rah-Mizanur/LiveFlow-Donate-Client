@@ -5,6 +5,7 @@ import Container from '../../../components/Shared/Container'
 import PendingReqCart from './PendingReqCart'
 import axios from 'axios'
 import { Link } from 'react-router'
+import LoadingSpinner from '../../../components/Shared/LoadingSpinner'
 
 const PendingRequest = () => {
     // const axiosSecure = useAxiosSecure()
@@ -15,10 +16,11 @@ const PendingRequest = () => {
       return result.data
     }
   })
-  console.log(allpendingBloodReq)
+  
 
   const feedHome =allpendingBloodReq.slice(0,3)
   
+  if(isLoading) return <LoadingSpinner></LoadingSpinner>
   return (
     <Container>
         <div className="max-w-4xl mx-auto p-6 font-sans">
