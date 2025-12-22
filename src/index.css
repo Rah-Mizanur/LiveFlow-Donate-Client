@@ -1,2 +1,14 @@
 @import 'tailwindcss';
 @plugin "daisyui";
+
+@theme {
+  --color-brand-red: #e25843;
+  --color-brand-blue: #bbd7e3;
+  --color-brand-blue-light: rgba(187, 215, 227, 0.2);
+}
+
+/* You can still keep :root for native CSS usage */
+:root {
+  --brand-red: #e25843;
+  --brand-blue: #bbd7e3;
+}

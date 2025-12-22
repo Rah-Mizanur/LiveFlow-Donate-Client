@@ -7,7 +7,6 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const UpdateStatusModal = ({isOpen,closeModal,request}) => {
     const {user} = useAuth()
-    console.log(request._id)
     const [updatedStatus ,setUpdatedStatus] = useState(request?.status)
     const axiosSecure = useAxiosSecure()
     const queryClient = useQueryClient();

@@ -1,112 +1,63 @@
 import React from 'react';
+import toast from 'react-hot-toast';
 
 const ContactUs = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Logic for form submission goes here
-    alert("Thank you for reaching out! We will get back to you soon.");
+    toast.success("Thank you for reaching out! We will get back to you soon.", {
+      style: {
+        border: '1px solid #e25843',
+        padding: '16px',
+        color: '#2B4C7E',
+      },
+      iconTheme: {
+        primary: '#e25843',
+        secondary: '#FFFAEE',
+      },
+    });
   };
 
   return (
-    <section className="py-16 bg-white" id="contact">
+   <section className="py-20 bg-white" id="contact">
       <div className="max-w-6xl mx-auto px-4">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-slate-800">Contact Us</h2>
-          <p className="text-gray-500 mt-3 text-lg">
-            Have questions or need help? Our team is here for you.
-          </p>
+        <div className="text-center mb-16">
+          <h2 className="text-4xl font-extrabold text-slate-800">
+            Get In <span className="text-brand-red">Touch</span>
+          </h2>
+          <div className="h-1 w-20 mx-auto mt-4 rounded-full bg-brand-blue"></div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
-          
-          {/* Left Side: Contact Information */}
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-4">Get in Touch</h3>
-              <p className="text-gray-600 mb-6">
-                Whether you are a donor, a recipient, or a hospital partner, feel free to reach out to us. We aim to respond to all inquiries within 24 hours.
-              </p>
-            </div>
-
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <div className="bg-red-50 p-3 rounded-lg text-red-600 text-xl">📍</div>
-                <div>
-                  <h4 className="font-bold text-slate-800">Our Location</h4>
-                  <p className="text-gray-600">Shariakandi, Bogura, Bangladesh</p>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div className="space-y-10">
+            <div className="space-y-8">
+              {[
+                { icon: "📍", title: "Our Location", desc: "Shariakandi, Bogura, Bangladesh" },
+                { icon: "📞", title: "Phone Number", desc: "+880 1904754838" },
+                { icon: "✉️", title: "Email Address", desc: "support@liveflow.com" }
+              ].map((item, i) => (
+                <div key={i} className="flex items-center gap-5 group">
+                  <div className="p-4 rounded-2xl bg-brand-blue-light text-brand-red transition-transform group-hover:scale-110">
+                    <span className="text-2xl">{item.icon}</span>
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-slate-800">{item.title}</h4>
+                    <p className="text-gray-600">{item.desc}</p>
+                  </div>
                 </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="bg-blue-50 p-3 rounded-lg text-[#2B4C7E] text-xl">📞</div>
-                <div>
-                  <h4 className="font-bold text-slate-800">Phone Number</h4>
-                  <p className="text-gray-600">+880 1904754838</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4">
-                <div className="bg-green-50 p-3 rounded-lg text-green-600 text-xl">✉️</div>
-                <div>
-                  <h4 className="font-bold text-slate-800">Email Address</h4>
-                  <p className="text-gray-600">support@liveflow.com</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Right Side: Contact Form */}
-          <div className="bg-gray-50 p-8 rounded-2xl border border-gray-100 shadow-sm">
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Full Name</label>
-                <input 
-                  type="text" 
-      
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#2B4C7E] outline-none transition"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
-                <input 
-                  type="email" 
-              
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#2B4C7E] outline-none transition"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Subject</label>
-                <select className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#2B4C7E] outline-none transition">
-                  <option>General Inquiry</option>
-                  <option>Blood Request Help</option>
-                  <option>Donor Partnership</option>
-                  <option>Technical Issue</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Message</label>
-                <textarea 
-                  rows="4" 
-                  placeholder="How can we help you?" 
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-[#2B4C7E] outline-none transition"
-                  required
-                ></textarea>
-              </div>
-
-              <button 
-                type="submit" 
-                className="w-full bg-[#2B4C7E] hover:bg-[#1f385c] text-white font-bold py-3 rounded-lg transition duration-300 shadow-md"
-              >
+          <div className="p-8 md:p-10 rounded-3xl shadow-xl border border-gray-100 bg-brand-blue-light/50">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <input type="text" placeholder="Full Name" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-red outline-none bg-white" required />
+              <input type="email" placeholder="Email" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-red outline-none bg-white" required />
+              <textarea rows="4" placeholder="Message" className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-brand-red outline-none bg-white" required></textarea>
+              <button type="submit" className="w-full bg-brand-red text-white font-bold py-4 rounded-xl shadow-lg hover:opacity-90 transition-all">
                 Send Message
               </button>
             </form>
           </div>
-
         </div>
       </div>
     </section>

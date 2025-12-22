@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import useAuth from '../../../../hooks/useAuth'
 import useAxiosSecure from '../../../../hooks/useAxiosSecure'
 import { useQuery } from '@tanstack/react-query'
@@ -8,13 +8,17 @@ import UsersDataRow from '../../../../components/Dashboard/TableRows/UsersDataRo
 const AllUsers = () => {
   const {user} = useAuth()
   const axiosSecure = useAxiosSecure()
-      const {data: allUsers = [] ,isLoading,refetch} = useQuery({
-     queryKey: ['allUsers'],
-    queryFn : async ()=> {
-      const result = await axiosSecure(`${import.meta.env.VITE_API_URL}/all-users`)
-      return result.data
-    }
-  })
+  const [statusFilter, setStatusFilter] = useState('');
+  const { data: allUsers = [], isLoading, refetch } = useQuery({
+  queryKey: ['allUsers', statusFilter],
+  queryFn: async () => {
+    const result = await axiosSecure.get(`/all-users`, {
+      params: { status: statusFilter }
+    });
+    return result.data;
+  }
+});
+
   console.log(allUsers)
   if(isLoading) return <LoadingSpinner></LoadingSpinner>
   return (
@@ -24,12 +28,16 @@ const AllUsers = () => {
 
       {/* Filter */}
       <div className="flex gap-3 mb-4">
-        <button className="px-4 py-2 rounded-md bg-blue-600 text-white text-sm">
+        <button onClick={()=>setStatusFilter('')} className={`px-4 py-2 rounded-md text-sm ${statusFilter === '' ? 'bg-brand-red text-white' : 'bg-brand-blue-light text-slate-700'}`}>
+          All
+        </button>
+        <button onClick={()=>setStatusFilter('active')} className={`px-4 py-2 rounded-md text-sm ${statusFilter === 'active' ? 'bg-brand-red text-white' : 'bg-brand-blue-light text-slate-700'}`}>
           Active
         </button>
-        <button className="px-4 py-2 rounded-md bg-gray-200 text-gray-700 text-sm">
+        <button onClick={()=>setStatusFilter('block')} className={`px-4 py-2 rounded-md text-sm ${statusFilter === 'block' ? 'bg-brand-red text-white' : 'bg-brand-blue-light text-slate-700'}`}>
           Blocked
         </button>
+
       </div>
 
       {/* Table */}

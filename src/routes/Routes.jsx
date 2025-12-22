@@ -18,6 +18,7 @@ import DashboardHome from "../pages/Dashboard/DashboardHome/DashBoardHome";
 import PendingDonationRequest from "../pages/pendingDonationReq/PendingDonationRequest";
 import FundingPage from "../pages/FundingPage/FundingPage";
 import SearchRequest from "../components/Home/Searchrequest/SearchRequest";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -31,7 +32,9 @@ export const router = createBrowserRouter([
       },
       {
         path: "request/:id",
-        element: <BloodRequestDetails></BloodRequestDetails>,
+        element: <PrivateRoute>
+          <BloodRequestDetails></BloodRequestDetails>
+        </PrivateRoute>,
       },
       {
         path: "donation-requests",

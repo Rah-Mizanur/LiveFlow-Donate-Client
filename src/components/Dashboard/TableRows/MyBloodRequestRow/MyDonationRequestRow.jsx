@@ -18,7 +18,6 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
   const axiosSecure = useAxiosSecure();
   let [isOpen, setIsOpen] = useState(false);
   const closeModal = () => setIsOpen(false);
-  console.log(request.registererEmail);
   const handleStatusDone = async () => {
     try {
       await axiosSecure.patch("/update-blood-status-done", {
