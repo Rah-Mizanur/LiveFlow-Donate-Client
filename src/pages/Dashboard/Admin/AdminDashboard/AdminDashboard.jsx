@@ -16,7 +16,24 @@ const AdminDashboard = ({user,allBloodReq,myBloodReq,allUsers}) => {
     })
 
     const totalBloodReq = allBloodReq.length + deletedBloodReq.length
-    console.log(totalBloodReq)
+   
+
+
+      const { data: funding = [], } = useQuery({
+    queryKey: ["funding"],
+    queryFn: async () => {
+      const result = await axiosSecure(
+        `${import.meta.env.VITE_API_URL}/funding`
+      );
+      return result.data;
+    },
+  });
+
+
+ const totalAmount = Array.isArray(funding)
+  ? funding.reduce((sum, d) => sum + (d.amount || 0), 0)
+  : 0;
+
   return (
     <div>  
     <div className="p-6 space-y-8">
@@ -51,7 +68,7 @@ const AdminDashboard = ({user,allBloodReq,myBloodReq,allUsers}) => {
             <FaHandHoldingUsd />
           </div>
           <div>
-            <h2 className="text-xl font-semibold">৳ 85,000</h2>
+            <h2 className="text-xl font-semibold">৳ {totalAmount}</h2>
             <p className="text-gray-600">Total Funding</p>
           </div>
         </div>

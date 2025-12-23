@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "question": "Who can donate blood on Liveflow?",
+    "answer": "Generally, donors must be between 18-65 years old, weigh at least 50kg, and be in good health. You should not have donated blood in the last 4 months."
+  },
+  {
+    "id": 2,
+    "question": "Is it safe to donate blood?",
+    "answer": "Absolutely. A new, sterile needle is used for each donor and then discarded. The actual donation takes only about 8-10 minutes."
+  },
+  {
+    "id": 3,
+    "question": "How often can I donate blood?",
+    "answer": "The 'flow' needs time to recover! You can safely donate whole blood every 120 days (4 months)."
+  },
+  {
+    "id": 4,
+    "question": "What should I eat before donating?",
+    "answer": "Eat a healthy meal (avoid fatty foods) and drink plenty of water. Avoid caffeine and ensure you've had a good night's sleep."
+  }
+]

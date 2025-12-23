@@ -19,6 +19,7 @@ import PendingDonationRequest from "../pages/pendingDonationReq/PendingDonationR
 import FundingPage from "../pages/FundingPage/FundingPage";
 import SearchRequest from "../components/Home/Searchrequest/SearchRequest";
 import PrivateRoute from "./PrivateRoute";
+import PaymentSuccess from "../pages/PaymentSuccess/PaymentSuccess";
 
 export const router = createBrowserRouter([
   {
@@ -32,9 +33,11 @@ export const router = createBrowserRouter([
       },
       {
         path: "request/:id",
-        element: <PrivateRoute>
-          <BloodRequestDetails></BloodRequestDetails>
-        </PrivateRoute>,
+        element: (
+          <PrivateRoute>
+            <BloodRequestDetails></BloodRequestDetails>
+          </PrivateRoute>
+        ),
       },
       {
         path: "donation-requests",
@@ -42,11 +45,15 @@ export const router = createBrowserRouter([
       },
       {
         path: "funding",
-        element:<FundingPage></FundingPage>,
+        element: <FundingPage></FundingPage>,
       },
       {
         path: "search-request",
-        element:<SearchRequest></SearchRequest>
+        element: <SearchRequest></SearchRequest>,
+      },
+      {
+        path: "payment-success",
+        element: <PaymentSuccess></PaymentSuccess>,
       },
     ],
   },

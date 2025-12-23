@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import useAuth from "../../../../hooks/useAuth";
+
 import useAxiosSecure from "../../../../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
 import LoadingSpinner from "../../../../components/Shared/LoadingSpinner";
@@ -7,7 +7,7 @@ import MyDonationRequestRow from "../../../../components/Dashboard/TableRows/MyB
 import { useForm } from "react-hook-form";
 
 const AllBloodDonationRequest = () => {
-  const { user } = useAuth();
+ 
 
   const axiosSecure = useAxiosSecure();
   const brandRed = "#e25843";
@@ -40,7 +40,6 @@ const { data: allBloodReq = [], isLoading, refetch } = useQuery({
     return result.data;
   },
 });
-  console.log(allBloodReq)
   // Handle filter submission
   const onSubmit = (data) => {
     setFilter({
