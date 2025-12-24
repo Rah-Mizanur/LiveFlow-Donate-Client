@@ -8,7 +8,8 @@ import { useForm } from "react-hook-form";
 
 const AllBloodDonationRequest = () => {
  
-
+ const [page, setPage] = useState(1); 
+  const limit = 5; 
   const axiosSecure = useAxiosSecure();
   const brandRed = "#e25843";
   const brandBlue = "#bbd7e3";
@@ -28,24 +29,28 @@ const AllBloodDonationRequest = () => {
 
   // Fetch all blood requests with current filters
 const { data: allBloodReq = [], isLoading, refetch } = useQuery({
-  queryKey: ["allBloodReq", filter],
+  queryKey: ["allBloodReq", filter,page],
   queryFn: async () => {
-    // Using axios params object is the safest way to handle '+' characters
+    
     const result = await axiosSecure.get('/all-blood-req', {
       params: {
-        bloodGroup: filter.bloodGroup, // Axios will encode '+' to '%2B'
-        status: filter.status
+        bloodGroup: filter.bloodGroup, 
+        status: filter.status,
+        page,
+        limit
       }
     });
     return result.data;
   },
 });
-  // Handle filter submission
+console.log(allBloodReq.data)
+
   const onSubmit = (data) => {
     setFilter({
       bloodGroup: data.bloodGroup || "",
       status: data.status || "",
     });
+    setPage(1)
   };
   if (isLoading) return <LoadingSpinner></LoadingSpinner>;
   return (
@@ -114,7 +119,7 @@ const { data: allBloodReq = [], isLoading, refetch } = useQuery({
           </div>
         </div>
 
-        {allBloodReq.length > 0 && (
+        {allBloodReq?.data.length > 0 && (
           <>
             <h3 className="text-lg md:text-xl font-medium mb-4">
               All Donation Requests
@@ -137,7 +142,7 @@ const { data: allBloodReq = [], isLoading, refetch } = useQuery({
                 </thead>
 
                 <tbody>
-                  {allBloodReq.map((request) => (
+                  {allBloodReq.data.map((request) => (
                     <MyDonationRequestRow
                       key={request._id}
                       request={request}
@@ -148,6 +153,29 @@ const { data: allBloodReq = [], isLoading, refetch } = useQuery({
             </div>
           </>
         )}
+      </div>
+       <div className="flex justify-center items-center gap-4 mt-4">
+        <button
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          disabled={page === 1}
+          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Prev
+        </button>
+        <span>
+          Page {allBloodReq.page || page} of {allBloodReq.totalPages || 1}
+        </span>
+        <button
+          onClick={() =>
+            setPage((prev) =>
+              prev < (allBloodReq.totalPages || 1) ? prev + 1 : prev
+            )
+          }
+          disabled={page === (allBloodReq.totalPages || 1)}
+          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+        >
+          Next
+        </button>
       </div>
     </div>
   );

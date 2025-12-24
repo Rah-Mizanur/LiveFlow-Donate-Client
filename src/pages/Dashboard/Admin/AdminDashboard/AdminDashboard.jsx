@@ -5,7 +5,7 @@ import { Link } from 'react-router'
 import { useQuery } from '@tanstack/react-query'
 import useAxiosSecure from '../../../../hooks/useAxiosSecure'
 
-const AdminDashboard = ({user,allBloodReq,myBloodReq,allUsers}) => {
+const AdminDashboard = ({user,activeBloodReq,myBloodReq,allUsers}) => {
   const axiosSecure = useAxiosSecure()
      const {data: deletedBloodReq = [] } = useQuery({
        queryKey: ['deletedBloodReq'],
@@ -15,10 +15,8 @@ const AdminDashboard = ({user,allBloodReq,myBloodReq,allUsers}) => {
       }
     })
 
-    const totalBloodReq = allBloodReq.length + deletedBloodReq.length
-   
-
-
+    const totalBloodReq = activeBloodReq.length + deletedBloodReq.length
+  
       const { data: funding = [], } = useQuery({
     queryKey: ["funding"],
     queryFn: async () => {

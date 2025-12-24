@@ -65,7 +65,7 @@ const SearchRequest = () => {
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <form className="max-w-5xl mx-auto bg-white rounded-lg shadow-sm border border-gray-100 p-6 mb-8">
         <h2 className="text-2xl font-bold text-slate-800 text-center mb-6">
-          Search for Blood Requests
+          Search Donors
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

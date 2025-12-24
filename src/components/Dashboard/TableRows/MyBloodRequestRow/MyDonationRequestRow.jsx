@@ -7,6 +7,7 @@ import useAxiosSecure from "../../../../hooks/useAxiosSecure";
 import useRole from "../../../../hooks/useRole";
 import useAuth from "../../../../hooks/useAuth";
 import Swal from "sweetalert2";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 const MyDonationRequestRow = ({ request, statusRefetch }) => {
   const { user } = useAuth();
@@ -18,63 +19,84 @@ const MyDonationRequestRow = ({ request, statusRefetch }) => {
   const axiosSecure = useAxiosSecure();
   let [isOpen, setIsOpen] = useState(false);
   const closeModal = () => setIsOpen(false);
-  const handleStatusDone = async () => {
-    try {
-      await axiosSecure.patch("/update-blood-status-done", {
-        id: request._id,
-        status: "done",
-      });
-      toast.success("Status Update Successfully");
-      await statusRefetch();
-    } catch (err) {
-      toast("Something went Wrong ... Try Again ..");
-      console.log(err);
-    }
-  };
 
-  const handleStatusCancel = async () => {
-    try {
-      await axiosSecure.patch("/update-blood-status-done", {
+
+// Inside your component
+const queryClient = useQueryClient();
+
+const { mutateAsync: updateBloodStatus } = useMutation({
+  mutationFn: async (newStatus) => {
+    const { data } = await axiosSecure.patch("/update-blood-status-done", {
+      id: request._id,
+      status: newStatus,
+    });
+    return data;
+  },
+  onSuccess: (data, variables) => {
+    const message =
+      variables === "done"
+        ? "Successfully completed! ❤️"
+        : "Request cancelled. ❌";
+
+    toast.success(message);
+
+    // Automatically refetch the relevant query
+    queryClient.invalidateQueries(["myBloodReq"]); // Replace with your query key
+  },
+  onError: (err) => {
+    toast.error("Failed to update status. Please try again.");
+    console.error(err);
+  },
+});
+
+// Handlers that call the same mutation with different arguments
+const handleStatusDone = () => updateBloodStatus("done");
+const handleStatusCancel = () => updateBloodStatus("cancel");
+  // Mutation to delete request
+  const { mutateAsync: deleteRequest } = useMutation({
+    mutationFn: async () => {
+      if (!request?._id) throw new Error("Invalid request ID");
+      const { data } = await axiosSecure.post("/delete-request", {
         id: request._id,
-        status: "cancel",
+        request ,
       });
-      toast.success("Status Update Successfully");
-      await statusRefetch();
-    } catch (err) {
-      toast("Something went Wrong ... Try Again ..");
-      console.log(err);
-    }
-  };
-  const handleDelete = async () => {
-  const result = await Swal.fire({
-    title: "Are you sure?",
-    text: "You won't be able to revert this!",
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonColor: "#3085d6",
-    cancelButtonColor: "#d33",
-    confirmButtonText: "Yes, delete it!"
+      return data;
+    },
+    onSuccess: () => {
+      toast.success("Request deleted successfully");
+      queryClient.invalidateQueries(["myBloodReq"]); // refresh the list
+    },
+    onError: (err) => {
+      console.error(err);
+      toast.error("Failed to delete request");
+    },
   });
 
-  if (result.isConfirmed) {
-    try {
-      await axiosSecure.post("/delete-request", {
-        id: request._id,
-        request,
-      });
-      toast.success("Request deleted"); // Assuming toast.success for success (common pattern; adjust if it's toast.delete)
-      await statusRefetch()
-      Swal.fire({
-        title: "Deleted!",
-        text: "Your request has been deleted.",
-        icon: "success"
-      });
-    } catch (err) {
-      console.log(err);
-      toast.error("Error happened"); // Assuming toast.error for errors
+  // Handler
+  const handleDelete = async () => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteRequest(); // ✅ use mutation instead of axios + statusRefetch
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your request has been deleted.",
+          icon: "success",
+        });
+      } catch (err) {
+        console.error(err);
+      }
     }
-  }
-};
+  };
   return (
     <tr>
       <td>{request.recipientName}</td>

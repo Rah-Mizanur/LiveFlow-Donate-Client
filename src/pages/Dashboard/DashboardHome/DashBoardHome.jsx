@@ -26,13 +26,14 @@ const {role ,isRoleLoading} = useRole()
     },
   });
   
-        const {data: allBloodReq = [] } = useQuery({
-       queryKey: ['allBloodReq'],
+        const {data: activeBloodReq = [] } = useQuery({
+       queryKey: ['activeBloodReq'],
       queryFn : async ()=> {
-        const result = await axiosSecure(`${import.meta.env.VITE_API_URL}/all-blood-req`)
+        const result = await axiosSecure(`${import.meta.env.VITE_API_URL}/active-blood-req`)
         return result.data
       }
     })
+   
 
           const {data: allUsers = [] } = useQuery({
          queryKey: ['allUsers'],
@@ -51,10 +52,10 @@ const {role ,isRoleLoading} = useRole()
      
     }
    {
-    role === 'admin'  && <AdminDashboard user={user} myBloodReq={myBloodReq} allBloodReq={allBloodReq} allUsers={allUsers}></AdminDashboard>
+    role === 'admin'  && <AdminDashboard user={user} myBloodReq={myBloodReq} activeBloodReq={activeBloodReq} allUsers={allUsers}></AdminDashboard>
    }
    {
-    role === 'volunteer'  && <AdminDashboard user={user} myBloodReq={myBloodReq} allBloodReq={allBloodReq} allUsers={allUsers}></AdminDashboard>
+    role === 'volunteer'  && <AdminDashboard user={user} myBloodReq={myBloodReq} activeBloodReq={activeBloodReq} allUsers={allUsers}></AdminDashboard>
    }
     </>
   );
